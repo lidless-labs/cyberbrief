@@ -32,7 +32,7 @@ async def run_research(
 
     Raises:
         ValueError: On missing keys or invalid tier.
-        PerplexityNotAvailable: For STANDARD/DEEP tiers (not yet implemented).
+        PerplexityNotAvailable: If Perplexity API is unreachable or misconfigured.
     """
     if isinstance(tier, str):
         tier = ResearchTier(tier)
@@ -48,8 +48,6 @@ async def run_research(
                 "Perplexity API key required for Standard/Deep tier. "
                 "Add your key in Settings or use the Free tier."
             )
-        # Perplexity integration is stubbed — PerplexityNotAvailable
-        # propagates to the API layer for a clean 501 response.
         if tier == ResearchTier.STANDARD:
             return await search_perplexity_sonar(topic, key)
         else:
