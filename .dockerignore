@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Node modules (rebuilt in Docker)
+frontend/node_modules
+
+# Python cache
+__pycache__
+*.pyc
+.pytest_cache
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Build artifacts (rebuilt in Docker)
+frontend/dist
+
+# Docs
+*.md
+LICENSE

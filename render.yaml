@@ -1,0 +1,12 @@
+# Render Blueprint
+# https://docs.render.com/infrastructure-as-code
+services:
+  - type: web
+    name: cyberbrief
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "10000"

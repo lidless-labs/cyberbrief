@@ -1,13 +1,16 @@
-"""CyberBRIEF FastAPI application — threat intelligence research & reporting API."""
+"""CyberBRIEF FastAPI application -- threat intelligence research & reporting API."""
 
 from __future__ import annotations
 
 import logging
+import os
+from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.staticfiles import StaticFiles
 
 from models import (
     AttackTechnique,
@@ -44,10 +47,16 @@ app = FastAPI(
 
 # ─── CORS ─────────────────────────────────────────────────────────────────────
 
-# TODO: Update allowed origins for production deployment (e.g., your domain)
+# In production (single container), frontend is served from the same origin.
+# In development, Vite dev server proxies /api requests here.
+_cors_origins = os.environ.get(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://localhost:3000",
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[o.strip() for o in _cors_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -216,7 +225,7 @@ async def export_pdf_endpoint(_report_data: dict) -> JSONResponse:
     """
     Export a report as PDF.
 
-    Stub implementation — PDF generation requires additional dependencies
+    Stub implementation -- PDF generation requires additional dependencies
     (weasyprint or similar). Returns a placeholder response.
     """
     return JSONResponse(
@@ -226,6 +235,44 @@ async def export_pdf_endpoint(_report_data: dict) -> JSONResponse:
             "suggestion": "pandoc -f markdown -t pdf report.md -o report.pdf",
         },
     )
+
+
+# ─── Static Frontend (Production) ─────────────────────────────────────────────
+#
+# In production Docker builds, the React frontend is pre-built into /app/static.
+# During local development, this directory won't exist and the block is skipped
+# entirely (Vite dev server handles the frontend instead).
+
+# Candidate paths: Docker container (/app/static) or local dev (../frontend/dist)
+_static_candidates = [
+    Path(__file__).resolve().parent / "static",        # /app/static in Docker
+    Path(__file__).resolve().parent.parent / "frontend" / "dist",  # local dev
+]
+_static_dir: Optional[Path] = None
+for _candidate in _static_candidates:
+    if _candidate.is_dir() and (_candidate / "index.html").exists():
+        _static_dir = _candidate
+        break
+
+if _static_dir is not None:
+    logger.info("Serving frontend static files from: %s", _static_dir)
+
+    # Mount Vite-built assets (JS/CSS/images with content hashes)
+    _assets_dir = _static_dir / "assets"
+    if _assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="assets")
+
+    # SPA catch-all: any route that is not /api/* and not a static file
+    # returns index.html so client-side routing works.
+    @app.get("/{full_path:path}")
+    async def serve_spa(request: Request, full_path: str) -> FileResponse:
+        """Serve the SPA index.html for non-API, non-asset routes."""
+        # Try to serve an exact static file first (favicon.ico, robots.txt, etc.)
+        requested = _static_dir / full_path  # type: ignore[operator]
+        if full_path and requested.is_file() and _static_dir in requested.resolve().parents:
+            return FileResponse(str(requested))
+        # Otherwise, return index.html for client-side routing
+        return FileResponse(str(_static_dir / "index.html"))
 
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────
