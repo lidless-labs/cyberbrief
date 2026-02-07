@@ -342,9 +342,10 @@ async def deep_research_perplexity(
         "return_related_questions": False,
     }
 
-    # Deep research can take longer
-    async with httpx.AsyncClient(timeout=120.0) as client:
+    # Deep research takes 2-5 minutes; use 360s timeout
+    async with httpx.AsyncClient(timeout=httpx.Timeout(360.0, connect=30.0)) as client:
         try:
+            logger.info("Starting Perplexity Deep Research for: %s (timeout 360s)", topic)
             response = await client.post(
                 PERPLEXITY_API_URL,
                 headers=headers,
@@ -353,7 +354,7 @@ async def deep_research_perplexity(
             response.raise_for_status()
         except httpx.TimeoutException:
             logger.error("Perplexity Deep Research timed out for topic: %s", topic)
-            raise ValueError("Deep research timed out. This can take up to 2 minutes. Please try again.")
+            raise ValueError("Deep research timed out after 6 minutes. Perplexity Deep Research can be slow for complex topics. Try a more specific query.")
         except httpx.HTTPStatusError as e:
             status = e.response.status_code
             if status == 401:

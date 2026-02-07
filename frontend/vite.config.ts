@@ -9,6 +9,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        timeout: 600000, // 10 min — Deep Research can take 2-5 min
       },
     },
   },
