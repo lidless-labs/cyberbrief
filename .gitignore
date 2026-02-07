@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.vite/
+__pycache__/
+*.pyc
+.env
+.env.local
+*.log
