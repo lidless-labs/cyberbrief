@@ -52,11 +52,17 @@ const variantRoutes = (
   </>
 );
 
+const isTypingTarget = (t: EventTarget | null): boolean =>
+  t instanceof HTMLInputElement ||
+  t instanceof HTMLTextAreaElement ||
+  t instanceof HTMLSelectElement ||
+  (t instanceof HTMLElement && t.isContentEditable);
+
 function VariantKeyboardNav() {
   const navigate = useNavigate();
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (isTypingTarget(e.target)) return;
       const num = parseInt(e.key);
       if (num >= 1 && num <= 5) navigate(`/${num}/home`);
       else if (e.key === 'Escape' || e.key === '0') navigate('/');
@@ -67,10 +73,9 @@ function VariantKeyboardNav() {
   return null;
 }
 
-function DefaultVariantRedirect() {
+function DefaultVariantRedirect({ defaultVariant }: { defaultVariant: number | null }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { defaultVariant } = useDefaultVariant(APP_ID);
 
   useEffect(() => {
     if (location.pathname === '/' && defaultVariant) {
@@ -90,7 +95,7 @@ function AppContent() {
   return (
     <>
       <VariantKeyboardNav />
-      <DefaultVariantRedirect />
+      <DefaultVariantRedirect defaultVariant={defaultVariant} />
       <KeyboardHints />
       <VariantSettings
         currentVariant={currentVariant}

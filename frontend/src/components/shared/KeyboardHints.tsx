@@ -21,6 +21,12 @@ const DEFAULT_SHORTCUTS: Shortcut[] = [
   { key: 'Esc', label: 'Back to picker' },
 ];
 
+const isTypingTarget = (t: EventTarget | null): boolean =>
+  t instanceof HTMLInputElement ||
+  t instanceof HTMLTextAreaElement ||
+  t instanceof HTMLSelectElement ||
+  (t instanceof HTMLElement && t.isContentEditable);
+
 export const KeyboardHints: React.FC<KeyboardHintsProps> = ({
   shortcuts = DEFAULT_SHORTCUTS,
 }) => {
@@ -29,7 +35,7 @@ export const KeyboardHints: React.FC<KeyboardHintsProps> = ({
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (isTypingTarget(e.target)) return;
       if (e.key === '?') {
         e.preventDefault();
         setOpen((o) => !o);
@@ -42,7 +48,7 @@ export const KeyboardHints: React.FC<KeyboardHintsProps> = ({
   // Show toast on variant switch
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (isTypingTarget(e.target)) return;
       const num = parseInt(e.key);
       if (num >= 1 && num <= 5) {
         setToast(`Variant ${num}`);
