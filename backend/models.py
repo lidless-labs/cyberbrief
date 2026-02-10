@@ -194,6 +194,20 @@ class NavigatorRequest(BaseModel):
     techniques: list[AttackTechnique]
 
 
+class SourceInput(BaseModel):
+    """A single source for the from-sources research endpoint."""
+    type: str = "url"  # "url", "text", or "pdf"
+    value: str  # URL string, raw text, or base64-encoded PDF
+    label: Optional[str] = None  # optional display name
+
+
+class SourceResearchRequest(BaseModel):
+    """Request body for /api/research/from-sources."""
+    topic: str
+    sources: list[SourceInput]
+    api_keys: Optional[ApiKeys] = None
+
+
 class HealthResponse(BaseModel):
     status: str = "ok"
     version: str = "0.1.0"

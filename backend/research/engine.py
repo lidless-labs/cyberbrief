@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import base64
 import time
 import logging
 from typing import Optional
 
-from models import ResearchBundle, ResearchTier, ResearchMetadata, ApiKeys
+from models import ResearchBundle, ResearchTier, ResearchMetadata, ApiKeys, SearchResult, SourceInput
 from research.brave import search_brave
 from research.gemini import synthesize_gemini
 from research.perplexity import search_perplexity_sonar, deep_research_perplexity, PerplexityNotAvailable
+from research.sources import extract_from_url, extract_from_text, _extract_pdf_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +108,84 @@ async def _run_free_tier(
         synthesis_duration_ms=synth_duration_ms,
         total_duration_ms=total_duration_ms,
         search_provider="brave",
+        synthesis_model="gemini-2.0-flash",
+    )
+
+    return bundle
+
+
+async def run_research_from_sources(
+    topic: str,
+    sources: list[SourceInput],
+    api_keys: Optional[ApiKeys] = None,
+) -> ResearchBundle:
+    """
+    Run the research pipeline from user-provided sources instead of search.
+
+    Accepts URLs (fetched server-side), raw text, and base64-encoded PDFs.
+    Feeds extracted content into Gemini synthesis.
+    """
+    import asyncio
+
+    total_start = time.monotonic()
+    extract_start = time.monotonic()
+
+    extracted: list[dict] = []
+
+    # Process all sources
+    for source in sources:
+        if source.type == "url":
+            result = await extract_from_url(source.value)
+            if result:
+                extracted.append(result)
+        elif source.type == "text":
+            label = source.label or "User-provided text"
+            extracted.append(extract_from_text(source.value, label))
+        elif source.type == "pdf":
+            try:
+                pdf_bytes = base64.b64decode(source.value)
+                result = await _extract_pdf_bytes(pdf_bytes, source.label or "Uploaded PDF")
+                if result:
+                    extracted.append(result)
+            except Exception as e:
+                logger.warning("Failed to decode/extract PDF: %s", e)
+        else:
+            logger.warning("Unknown source type: %s", source.type)
+
+    if not extracted:
+        raise ValueError("No content could be extracted from the provided sources.")
+
+    extract_duration_ms = int((time.monotonic() - extract_start) * 1000)
+    logger.info(
+        "Extracted content from %d/%d sources in %dms",
+        len(extracted), len(sources), extract_duration_ms,
+    )
+
+    # Convert to SearchResult format for the existing synthesis pipeline
+    search_results = [
+        SearchResult(
+            title=item["title"],
+            url=item["url"],
+            snippet=item["snippet"],
+        )
+        for item in extracted
+    ]
+
+    # Run Gemini synthesis (reuses the exact same pipeline)
+    synth_start = time.monotonic()
+    bundle = await synthesize_gemini(
+        topic=topic,
+        search_results=search_results,
+        api_key=(api_keys.gemini if api_keys else None),
+    )
+    synth_duration_ms = int((time.monotonic() - synth_start) * 1000)
+    total_duration_ms = int((time.monotonic() - total_start) * 1000)
+
+    bundle.metadata = ResearchMetadata(
+        search_duration_ms=extract_duration_ms,
+        synthesis_duration_ms=synth_duration_ms,
+        total_duration_ms=total_duration_ms,
+        search_provider="user-sources",
         synthesis_model="gemini-2.0-flash",
     )
 

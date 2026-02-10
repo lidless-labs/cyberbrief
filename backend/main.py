@@ -19,9 +19,10 @@ from models import (
     Report,
     ReportGenerateRequest,
     ResearchRequest,
+    SourceResearchRequest,
     TLPLevel,
 )
-from research.engine import run_research
+from research.engine import run_research, run_research_from_sources
 from research.perplexity import PerplexityNotAvailable
 from report.generator import generate_report
 from export.markdown import export_markdown
@@ -99,6 +100,39 @@ async def research_endpoint(request: ResearchRequest) -> dict:
         raise HTTPException(
             status_code=500,
             detail="Research pipeline encountered an internal error. Check server logs.",
+        ) from exc
+
+
+# ─── Research from Sources ────────────────────────────────────────────────────
+
+
+@app.post("/api/research/from-sources")
+async def research_from_sources_endpoint(request: SourceResearchRequest) -> dict:
+    """
+    Run the research pipeline from user-provided sources (URLs, text, PDFs).
+
+    Skips the search step and goes straight to synthesis from the provided content.
+    Accepts URLs (fetched server-side), raw text, and base64-encoded PDFs.
+    """
+    if not request.sources:
+        raise HTTPException(status_code=400, detail="At least one source is required.")
+    if len(request.sources) > 20:
+        raise HTTPException(status_code=400, detail="Maximum 20 sources per request.")
+
+    try:
+        bundle = await run_research_from_sources(
+            topic=request.topic,
+            sources=request.sources,
+            api_keys=request.api_keys,
+        )
+        return bundle.model_dump(by_alias=True)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        logger.exception("Source research pipeline failed for topic: %s", request.topic)
+        raise HTTPException(
+            status_code=500,
+            detail="Source research pipeline encountered an internal error.",
         ) from exc
 
 
