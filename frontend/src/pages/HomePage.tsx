@@ -209,7 +209,7 @@ export const HomePage: React.FC = () => {
       </div>
 
       {/* Tier Selector Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" data-tour="tier-selector">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 max-w-2xl mx-auto" data-tour="tier-selector">
         {TIER_INFO.map((info) => {
           const isLocked = info.requiresKey && !hasApiKey(info.requiresKey as keyof typeof apiKeys);
           const isSelected = selectedTier === info.tier;
