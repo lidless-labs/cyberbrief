@@ -58,7 +58,7 @@ const TIER_INFO: {
     tier: 'FREE',
     name: 'Free',
     description: 'Quick threat overview',
-    features: ['Brave Search', 'Gemini Flash synthesis', '10 queries/day', 'Basic IOC extraction'],
+    features: ['Perplexity Sonar', 'IOC extraction', 'ATT&CK mapping', '10 queries/hour'],
     icon: '🔓',
     colorBorder: 'border-green-500/40',
     colorBg: 'bg-green-500/5',
@@ -77,7 +77,6 @@ const TIER_INFO: {
     colorRing: 'ring-blue-500/40',
     colorText: 'text-blue-400',
     colorGlow: 'shadow-blue-500/10',
-    requiresKey: 'perplexity',
   },
   {
     tier: 'DEEP',
@@ -90,7 +89,6 @@ const TIER_INFO: {
     colorRing: 'ring-purple-500/40',
     colorText: 'text-purple-400',
     colorGlow: 'shadow-purple-500/10',
-    requiresKey: 'perplexity',
   },
 ];
 
@@ -120,10 +118,7 @@ export const HomePage: React.FC = () => {
 
   const canSubmit =
     topic.trim().length > 0 &&
-    !isLoading &&
-    (selectedTier === 'FREE'
-      ? rateLimit.remaining > 0
-      : hasApiKey(selectedTier === 'STANDARD' || selectedTier === 'DEEP' ? 'perplexity' : 'brave'));
+    !isLoading;
 
   const basePath = location.pathname.match(/^\/\d+/)?.[0] ?? '';
 

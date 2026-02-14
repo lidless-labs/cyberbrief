@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import logging
 import os
+import time
+from collections import defaultdict
 from pathlib import Path
 from typing import Optional
 
@@ -63,6 +65,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ─── Rate Limiting ────────────────────────────────────────────────────────────
+
+RATE_LIMIT_PER_HOUR = int(os.environ.get("RATE_LIMIT_PER_HOUR", "10"))
+RATE_LIMIT_PER_DAY = int(os.environ.get("RATE_LIMIT_PER_DAY", "50"))
+_rate_hits: dict[str, list[float]] = defaultdict(list)
+
+
+def _check_rate_limit(client_ip: str) -> None:
+    """Raise 429 if client exceeds hourly or daily research limits."""
+    now = time.time()
+    hits = _rate_hits[client_ip]
+    # Prune entries older than 24h
+    _rate_hits[client_ip] = hits = [t for t in hits if now - t < 86400]
+    hour_hits = sum(1 for t in hits if now - t < 3600)
+    if hour_hits >= RATE_LIMIT_PER_HOUR:
+        raise HTTPException(429, "Rate limit exceeded. Try again in an hour.")
+    if len(hits) >= RATE_LIMIT_PER_DAY:
+        raise HTTPException(429, "Daily limit reached. Try again tomorrow.")
+    hits.append(now)
+
+
 # ─── Health ───────────────────────────────────────────────────────────────────
 
 
@@ -76,13 +99,14 @@ async def health_check() -> HealthResponse:
 
 
 @app.post("/api/research")
-async def research_endpoint(request: ResearchRequest) -> dict:
+async def research_endpoint(request: ResearchRequest, req: Request) -> dict:
     """
     Run the research pipeline for a given topic and tier.
 
     Returns a ResearchBundle with search results, synthesized content,
     extracted IOCs, and suggested ATT&CK techniques.
     """
+    _check_rate_limit(req.client.host if req.client else "unknown")
     try:
         bundle = await run_research(
             topic=request.topic,
@@ -107,13 +131,14 @@ async def research_endpoint(request: ResearchRequest) -> dict:
 
 
 @app.post("/api/research/from-sources")
-async def research_from_sources_endpoint(request: SourceResearchRequest) -> dict:
+async def research_from_sources_endpoint(request: SourceResearchRequest, req: Request) -> dict:
     """
     Run the research pipeline from user-provided sources (URLs, text, PDFs).
 
     Skips the search step and goes straight to synthesis from the provided content.
     Accepts URLs (fetched server-side), raw text, and base64-encoded PDFs.
     """
+    _check_rate_limit(req.client.host if req.client else "unknown")
     if not request.sources:
         raise HTTPException(status_code=400, detail="At least one source is required.")
     if len(request.sources) > 20:
