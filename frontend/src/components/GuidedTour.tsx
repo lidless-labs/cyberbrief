@@ -76,7 +76,7 @@ const TOUR_STEPS: DriverStep[] = [
     popover: {
       title: '📊 Choose Research Tier',
       description:
-        'Select your research depth: Free (Brave + Gemini), Standard (Perplexity Sonar), or Deep (Perplexity Deep Research). Higher tiers require API keys configured in Settings.',
+        'Select your research depth: Standard (Perplexity Sonar) for fast, citation-backed research, or Deep Research for comprehensive multi-source analysis with full threat actor profiling.',
       side: 'top',
       align: 'center',
     },
