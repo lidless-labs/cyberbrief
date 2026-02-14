@@ -34,12 +34,17 @@ class ConfidenceLevel(str, Enum):
 class IOCType(str, Enum):
     IPV4 = "ipv4"
     IPV6 = "ipv6"
+    IP = "ip"
     DOMAIN = "domain"
     URL = "url"
     MD5 = "md5"
     SHA1 = "sha1"
     SHA256 = "sha256"
+    HASH_MD5 = "hash_md5"
+    HASH_SHA1 = "hash_sha1"
+    HASH_SHA256 = "hash_sha256"
     CVE = "cve"
+    EMAIL = "email"
 
 
 # ─── IOC ──────────────────────────────────────────────────────────────────────
