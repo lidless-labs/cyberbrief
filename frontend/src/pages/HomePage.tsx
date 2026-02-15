@@ -216,7 +216,7 @@ export const HomePage: React.FC = () => {
       </div>
 
       {/* Tier Selector Cards — Deep Research only shown with BYOK Perplexity key */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 max-w-2xl mx-auto" data-tour="tier-selector">
+      <div className="flex flex-wrap justify-center gap-4 mb-6 max-w-2xl mx-auto" data-tour="tier-selector">
         {TIER_INFO.filter((info) => info.tier !== 'DEEP' || hasApiKey('perplexity')).map((info) => {
           const isLocked = info.requiresKey && !hasApiKey(info.requiresKey as keyof typeof apiKeys);
           const isSelected = selectedTier === info.tier;
@@ -225,7 +225,7 @@ export const HomePage: React.FC = () => {
               key={info.tier}
               onClick={() => !isLocked && setSelectedTier(info.tier)}
               disabled={isLoading || !!isLocked}
-              className={`relative p-5 rounded-xl border-2 text-left transition-all ${isSelected ? `${info.colorBorder} ${info.colorBg} ring-2 ring-offset-2 ring-offset-gray-950 ${info.colorRing} shadow-lg ${info.colorGlow}` : 'border-gray-800 bg-gray-900/30 hover:border-gray-700'} ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              className={`relative p-5 rounded-xl border-2 text-left transition-all w-full max-w-sm ${isSelected ? `${info.colorBorder} ${info.colorBg} ring-2 ring-offset-2 ring-offset-gray-950 ${info.colorRing} shadow-lg ${info.colorGlow}` : 'border-gray-800 bg-gray-900/30 hover:border-gray-700'} ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{isLocked ? '🔒' : info.icon}</span>
