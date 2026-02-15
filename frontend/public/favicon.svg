@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield body -->
+  <path d="M16 2 L28 7 V15 C28 22 22.5 27.5 16 30 C9.5 27.5 4 22 4 15 V7 Z" fill="none" stroke="url(#g)" stroke-width="1.8" opacity="0.9"/>
+  <!-- Inner shield glow -->
+  <path d="M16 4 L26 8.5 V15 C26 21 21.5 26 16 28.2 C10.5 26 6 21 6 15 V8.5 Z" fill="#06b6d4" opacity="0.08"/>
+  <!-- Crosshair circle -->
+  <circle cx="16" cy="15" r="6.5" fill="none" stroke="url(#g)" stroke-width="1.2" opacity="0.7"/>
+  <circle cx="16" cy="15" r="2" fill="#06b6d4" opacity="0.9"/>
+  <!-- Crosshair lines -->
+  <line x1="16" y1="7" x2="16" y2="11" stroke="#06b6d4" stroke-width="1" opacity="0.5"/>
+  <line x1="16" y1="19" x2="16" y2="23" stroke="#06b6d4" stroke-width="1" opacity="0.5"/>
+  <line x1="8" y1="15" x2="12" y2="15" stroke="#06b6d4" stroke-width="1" opacity="0.5"/>
+  <line x1="20" y1="15" x2="24" y2="15" stroke="#06b6d4" stroke-width="1" opacity="0.5"/>
+  <!-- Scan lines / data ticks -->
+  <line x1="12" y1="10" x2="14" y2="12" stroke="#3b82f6" stroke-width="0.8" opacity="0.4"/>
+  <line x1="20" y1="10" x2="18" y2="12" stroke="#3b82f6" stroke-width="0.8" opacity="0.4"/>
+  <line x1="12" y1="20" x2="14" y2="18" stroke="#3b82f6" stroke-width="0.8" opacity="0.4"/>
+  <line x1="20" y1="20" x2="18" y2="18" stroke="#3b82f6" stroke-width="0.8" opacity="0.4"/>
+</svg>

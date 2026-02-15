@@ -412,14 +412,14 @@ export const HomePage: React.FC = () => {
               key={info.tier}
               onClick={() => !isLocked && setSelectedTier(info.tier)}
               disabled={isLoading || !!isLocked}
-              className={`relative p-5 rounded-xl border-2 text-left transition-all w-full max-w-sm ${isSelected ? `${info.colorBorder} ${info.colorBg} ring-2 ring-offset-2 ring-offset-gray-950 ${info.colorRing} shadow-lg ${info.colorGlow}` : 'border-gray-800 bg-gray-900/30 hover:border-gray-700'} ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              className={`relative p-5 rounded-xl border-2 text-center transition-all w-full max-w-sm ${isSelected ? `${info.colorBorder} ${info.colorBg} ring-2 ring-offset-2 ring-offset-gray-950 ${info.colorRing} shadow-lg ${info.colorGlow}` : 'border-gray-800 bg-gray-900/30 hover:border-gray-700'} ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center justify-center gap-2 mb-2">
                 <span className="text-2xl">{isLocked ? '🔒' : info.icon}</span>
                 <h3 className={`font-bold text-lg ${isSelected ? info.colorText : 'text-gray-100'}`}>{info.name}</h3>
               </div>
               <p className="text-xs text-gray-400 mb-3">{info.description}</p>
-              <ul className="space-y-1">
+              <ul className="space-y-1 inline-block text-left">
                 {info.features.map((feat) => (
                   <li key={feat} className="text-xs text-gray-500 flex items-center gap-1.5">
                     <span className={`text-[10px] ${isSelected ? info.colorText : 'text-gray-600'}`}>✓</span>
