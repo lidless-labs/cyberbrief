@@ -16,20 +16,20 @@ interface SuggestedTopic {
 }
 
 const SUGGESTED_TOPICS: SuggestedTopic[] = [
-  { label: 'Volt Typhoon', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Salt Typhoon Telecom Attacks', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Lazarus Group Crypto Heists', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Midnight Blizzard (APT29)', category: 'APT Groups', icon: '🕵️' },
-  { label: '0APT Ransomware Group 2026', category: 'Ransomware', icon: '💀' },
-  { label: 'LockBit 4.0 Resurgence', category: 'Ransomware', icon: '💀' },
-  { label: 'Ransomware Healthcare 2026', category: 'Ransomware', icon: '💀' },
-  { label: 'Medusa Ransomware', category: 'Ransomware', icon: '💀' },
-  { label: 'Microsoft Feb 2026 Zero-Days', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-21527 Exchange RCE', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'Ivanti Connect Secure 2026', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'AI-Powered Phishing Campaigns', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Supply Chain APT Targeting Telecom', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Deepfake Social Engineering 2026', category: 'Supply Chain', icon: '🔗' },
+  { label: 'RU-APT-ChainReaver-L GitHub Supply Chain', category: 'APT Groups', icon: '🕵️' },
+  { label: 'HoneyMyte CoolClient Backdoor Campaign', category: 'APT Groups', icon: '🕵️' },
+  { label: 'UAT-9686 Cisco SEG Exploitation', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Violet Typhoon eScan Supply Chain', category: 'APT Groups', icon: '🕵️' },
+  { label: 'NightSpire Extortion Campaign', category: 'Ransomware', icon: '💀' },
+  { label: 'Qilin Rust-Based Ecosystem', category: 'Ransomware', icon: '💀' },
+  { label: 'LockBit Double-Extortion Attacks', category: 'Ransomware', icon: '💀' },
+  { label: 'Notepad++ Trojanized Updates', category: 'Supply Chain', icon: '🔗' },
+  { label: 'eScan Antivirus Compromise', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Open-Source Package Poisoning', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Malicious Browser Extensions', category: 'Supply Chain', icon: '🔗' },
+  { label: 'CVE-2026-21510 SmartScreen Bypass', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-2441 Chrome RCE', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-20841 Notepad RCE', category: 'Vulnerabilities', icon: '🐛' },
 ];
 
 const CATEGORIES = ['APT Groups', 'Supply Chain', 'Ransomware', 'Vulnerabilities'] as const;
