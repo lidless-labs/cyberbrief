@@ -16,20 +16,20 @@ interface SuggestedTopic {
 }
 
 const SUGGESTED_TOPICS: SuggestedTopic[] = [
-  { label: 'RU-APT-ChainReaver-L GitHub Supply Chain', category: 'APT Groups', icon: '🕵️' },
-  { label: 'HoneyMyte CoolClient Backdoor Campaign', category: 'APT Groups', icon: '🕵️' },
-  { label: 'UAT-9686 Cisco SEG Exploitation', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Violet Typhoon eScan Supply Chain', category: 'APT Groups', icon: '🕵️' },
-  { label: 'NightSpire Extortion Campaign', category: 'Ransomware', icon: '💀' },
-  { label: 'Qilin Rust-Based Ecosystem', category: 'Ransomware', icon: '💀' },
-  { label: 'LockBit Double-Extortion Attacks', category: 'Ransomware', icon: '💀' },
-  { label: 'Notepad++ Trojanized Updates', category: 'Supply Chain', icon: '🔗' },
-  { label: 'eScan Antivirus Compromise', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Open-Source Package Poisoning', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Malicious Browser Extensions', category: 'Supply Chain', icon: '🔗' },
-  { label: 'CVE-2026-21510 SmartScreen Bypass', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-2441 Chrome RCE', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-20841 Notepad RCE', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'APT41 Silver Dragon govt intrusions via Google Drive C2', category: 'APT Groups', icon: '🕵️' },
+  { label: 'MuddyWater Dindoor backdoor targeting U.S. networks', category: 'APT Groups', icon: '🕵️' },
+  { label: 'APT28 BadPaw + MeowMeow campaign against Ukraine', category: 'APT Groups', icon: '🕵️' },
+  { label: 'China-linked telecom campaign using TernDoor / PeerTime / BruteEntry', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Open-source package maintainer account hijacks (npm ecosystem)', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Chrome extension supply chain backdoor campaigns in enterprises', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Third-party vendor breach cascade (shadow layer impact)', category: 'Supply Chain', icon: '🔗' },
+  { label: '0APT surge in weekly victim disclosures', category: 'Ransomware', icon: '💀' },
+  { label: 'Qilin ransomware victim spike and extortion activity', category: 'Ransomware', icon: '💀' },
+  { label: 'Play ransomware leak-site pressure campaigns', category: 'Ransomware', icon: '💀' },
+  { label: 'CVE-2026-22719 VMware Aria Operations (KEV, active exploitation)', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-21385 Qualcomm Android component (KEV, exploited)', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2017-7921 Hikvision camera flaw added to KEV', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2021-22681 Rockwell Automation flaw added to KEV', category: 'Vulnerabilities', icon: '🐛' },
 ];
 
 const CATEGORIES = ['APT Groups', 'Supply Chain', 'Ransomware', 'Vulnerabilities'] as const;
