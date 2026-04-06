@@ -16,20 +16,20 @@ interface SuggestedTopic {
 }
 
 const SUGGESTED_TOPICS: SuggestedTopic[] = [
-  { label: 'Salt Typhoon persistent telecom access — FBI confirms nearly every American impacted', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Volt Typhoon pre-positioning in US critical infrastructure via compromised SOHO routers', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Flax Typhoon router exploitation driving FCC ban on foreign networking hardware', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Bearlyfy new RaaS group using LockBit 3 and PolyVice encryptors against European targets', category: 'APT Groups', icon: '🕵️' },
-  { label: 'TeamPCP LiteLLM PyPI compromise (v1.82.7/1.82.8) with credential stealer and Kubernetes backdoor', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Trivy GitHub Actions tag hijack spawning CanisterWorm across 47 npm packages', category: 'Supply Chain', icon: '🔗' },
-  { label: 'TeamPCP Telnyx PyPI poisoning expanding LLM toolchain supply chain campaign', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Navia Benefit Solutions breach exposing 2.7M records via December 2025 supply chain intrusion', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Akira ransomware ranked #1 active group in 2026 — surge in healthcare sector targeting', category: 'Ransomware', icon: '💀' },
-  { label: 'Qilin ransomware expansion after recruiting LockBit and RansomHub affiliates', category: 'Ransomware', icon: '💀' },
-  { label: 'Interlock ransomware exploiting Cisco FMC zero-day CVE-2026-20131 for root access', category: 'Ransomware', icon: '💀' },
-  { label: 'CVE-2026-33017 Langflow unauthenticated RCE weaponized within 20 hours of disclosure', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-21992 Oracle Identity Manager unauthenticated RCE — active exploitation in the wild', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2025-53521 F5 BIG-IP RCE under active exploitation — CISA emergency alert issued', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'TA416 (DarkPeony/RedDelta) spear-phishing campaign targeting Asia-Pacific government and manufacturing entities', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Silver Fox campaigns using AtlasCross RAT and ValleyRAT in tax-themed lures against Japanese enterprises', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Iran-aligned proxy operations escalating hack-and-leak and DDoS campaigns against US and Israeli sectors', category: 'APT Groups', icon: '🕵️' },
+  { label: 'TeamT5-linked operation abusing RMM tooling and Python stealers in multi-track East Asia intrusion sets', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Axios npm compromise (v1.14.1 and v0.30.4) injecting plain-crypto-js@4.2.1 to deliver cross-platform RAT payloads', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Trivy supply chain breach via GitHub/CI pipeline abuse with downstream secret exposure and package trust impact', category: 'Supply Chain', icon: '🔗' },
+  { label: 'KICS and LiteLLM package ecosystem compromise chain tied to broader developer tooling poisoning activity', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Telnyx-linked package trust incident leveraged in coordinated open-source maintainer credential theft wave', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Qilin ransomware claim against Die Linke with outage and data-leak extortion pressure in Europe', category: 'Ransomware', icon: '💀' },
+  { label: 'TheGentlemen RaaS affiliate leak exposing FortiGate exploit tradecraft and BYOVD evasion workflows', category: 'Ransomware', icon: '💀' },
+  { label: 'Akira-lookalike campaign in South America using Babuk-derived encryptor and fake Akira negotiation infrastructure', category: 'Ransomware', icon: '💀' },
+  { label: 'CVE-2026-5281 Google Dawn/Chrome WebGPU use-after-free zero-day added to CISA KEV (active exploitation)', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-3502 TrueConf Server path traversal flaw added to CISA KEV after in-the-wild exploitation', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-3055 Citrix NetScaler memory overread actively exploited with urgent federal patch deadlines', category: 'Vulnerabilities', icon: '🐛' },
 ];
 
 const CATEGORIES = ['APT Groups', 'Supply Chain', 'Ransomware', 'Vulnerabilities'] as const;
