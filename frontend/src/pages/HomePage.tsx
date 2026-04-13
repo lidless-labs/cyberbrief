@@ -16,20 +16,20 @@ interface SuggestedTopic {
 }
 
 const SUGGESTED_TOPICS: SuggestedTopic[] = [
-  { label: 'TA416 (DarkPeony/RedDelta) spear-phishing campaign targeting Asia-Pacific government and manufacturing entities', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Silver Fox campaigns using AtlasCross RAT and ValleyRAT in tax-themed lures against Japanese enterprises', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Iran-aligned proxy operations escalating hack-and-leak and DDoS campaigns against US and Israeli sectors', category: 'APT Groups', icon: '🕵️' },
-  { label: 'TeamT5-linked operation abusing RMM tooling and Python stealers in multi-track East Asia intrusion sets', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Axios npm compromise (v1.14.1 and v0.30.4) injecting plain-crypto-js@4.2.1 to deliver cross-platform RAT payloads', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Trivy supply chain breach via GitHub/CI pipeline abuse with downstream secret exposure and package trust impact', category: 'Supply Chain', icon: '🔗' },
-  { label: 'KICS and LiteLLM package ecosystem compromise chain tied to broader developer tooling poisoning activity', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Telnyx-linked package trust incident leveraged in coordinated open-source maintainer credential theft wave', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Qilin ransomware claim against Die Linke with outage and data-leak extortion pressure in Europe', category: 'Ransomware', icon: '💀' },
-  { label: 'TheGentlemen RaaS affiliate leak exposing FortiGate exploit tradecraft and BYOVD evasion workflows', category: 'Ransomware', icon: '💀' },
-  { label: 'Akira-lookalike campaign in South America using Babuk-derived encryptor and fake Akira negotiation infrastructure', category: 'Ransomware', icon: '💀' },
-  { label: 'CVE-2026-5281 Google Dawn/Chrome WebGPU use-after-free zero-day added to CISA KEV (active exploitation)', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-3502 TrueConf Server path traversal flaw added to CISA KEV after in-the-wild exploitation', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-3055 Citrix NetScaler memory overread actively exploited with urgent federal patch deadlines', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'APT28 PRISMEX spear-phishing campaign targeting Ukraine and NATO allies', category: 'APT Groups', icon: '🕵️' },
+  { label: 'APT28 FrostArmada DNS-hijack campaign abusing MikroTik and TP-Link routers to steal Microsoft 365 credentials', category: 'APT Groups', icon: '🕵️' },
+  { label: 'APT37 Facebook social-engineering campaign delivering RokRAT through trojanized PDFelement accounts', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Iran-linked password-spraying campaign against 300+ Israeli Microsoft 365 organizations tied to Pay2Key.I2P operators', category: 'APT Groups', icon: '🕵️' },
+  { label: 'UNC1069 Axios npm supply chain attack on axios v1.14.1 and v0.30.4 delivering WAVESHAPER.V2', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Smart Slider 3 Pro v3.5.1.35 backdoored update distributed through compromised Nextend servers', category: 'Supply Chain', icon: '🔗' },
+  { label: 'TeamPCP compromise of LiteLLM PyPI versions 1.82.7 and 1.82.8 to steal developer credentials', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Qilin and Warlock ransomware BYOVD campaign disabling 300+ EDR tools with vulnerable drivers', category: 'Ransomware', icon: '💀' },
+  { label: 'Storm-1175 high-velocity exploitation chain used to deploy Medusa ransomware', category: 'Ransomware', icon: '💀' },
+  { label: 'Pay2Key.I2P relaunch linked to Fox Kitten and Mimic with 80% affiliate cuts for attacks on Iran’s enemies', category: 'Ransomware', icon: '💀' },
+  { label: 'CVE-2026-39987 Marimo pre-auth RCE exploited within 10 hours of disclosure', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-34621 Adobe Acrobat Reader zero-day exploited via malicious PDFs since December 2025', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-35616 FortiClient EMS actively exploited and added to CISA KEV', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-34040 Docker authorization bypass that can expose host access', category: 'Vulnerabilities', icon: '🐛' },
 ];
 
 const CATEGORIES = ['APT Groups', 'Supply Chain', 'Ransomware', 'Vulnerabilities'] as const;
