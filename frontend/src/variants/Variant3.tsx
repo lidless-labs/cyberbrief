@@ -77,12 +77,12 @@ export const Variant3: React.FC = () => {
             </div>
           </nav>
 
-          <div className="mx-auto mt-4 grid max-w-[1368px] grid-cols-2 overflow-hidden rounded-2xl border text-[10px] font-bold uppercase tracking-[0.18em] md:grid-cols-5" style={{ borderColor: 'var(--desk-hairline)', color: 'var(--desk-muted)', backgroundColor: 'rgba(251,248,241,0.78)' }}>
-            <div className="flex items-center justify-between gap-3 border-r px-3 py-3" style={{ borderColor: 'var(--desk-hairline)' }}><span>Edition</span><span style={{ color: 'var(--desk-accent-dark)' }}>{today}</span></div>
-            <div className="flex items-center justify-between gap-3 border-r px-3 py-3" style={{ borderColor: 'var(--desk-hairline)' }}><span>Classification</span><span style={{ color: 'var(--desk-accent-dark)' }}>Restricted</span></div>
-            <div className="flex items-center justify-between gap-3 border-r px-3 py-3" style={{ borderColor: 'var(--desk-hairline)' }}><span>Research Mode</span><span style={{ color: 'var(--desk-accent-dark)' }}>{tier}</span></div>
-            <div className="flex items-center justify-between gap-3 border-r px-3 py-3" style={{ borderColor: 'var(--desk-hairline)' }}><span>Scan Budget</span><span style={{ color: 'var(--desk-accent-dark)' }}>{rateLimit.remaining} of {rateLimit.limit}</span></div>
-            <div className="flex items-center justify-between gap-3 px-3 py-3"><span>Status</span><span style={{ color: 'var(--desk-green)' }}>Active</span></div>
+          <div className="mx-auto mt-4 grid max-w-[1368px] grid-cols-2 overflow-hidden rounded-2xl border text-[10px] font-bold uppercase tracking-[0.14em] md:grid-cols-5" style={{ borderColor: 'var(--desk-hairline)', color: 'var(--desk-muted)', backgroundColor: 'rgba(251,248,241,0.78)' }}>
+            <div className="flex min-w-0 flex-col gap-1 border-r px-3 py-3 xl:flex-row xl:items-center xl:justify-between" style={{ borderColor: 'var(--desk-hairline)' }}><span>Edition</span><span style={{ color: 'var(--desk-accent-dark)' }}>{today}</span></div>
+            <div className="flex min-w-0 flex-col gap-1 border-r px-3 py-3 xl:flex-row xl:items-center xl:justify-between" style={{ borderColor: 'var(--desk-hairline)' }}><span>Classification</span><span style={{ color: 'var(--desk-accent-dark)' }}>Restricted</span></div>
+            <div className="flex min-w-0 flex-col gap-1 border-r px-3 py-3 xl:flex-row xl:items-center xl:justify-between" style={{ borderColor: 'var(--desk-hairline)' }}><span>Research Mode</span><span style={{ color: 'var(--desk-accent-dark)' }}>{tier}</span></div>
+            <div className="flex min-w-0 flex-col gap-1 border-r px-3 py-3 xl:flex-row xl:items-center xl:justify-between" style={{ borderColor: 'var(--desk-hairline)' }}><span>Scan Budget</span><span style={{ color: 'var(--desk-accent-dark)' }}>{rateLimit.remaining} of {rateLimit.limit}</span></div>
+            <div className="flex min-w-0 flex-col gap-1 px-3 py-3 xl:flex-row xl:items-center xl:justify-between"><span>Status</span><span style={{ color: 'var(--desk-green)' }}>Active</span></div>
           </div>
         </header>
 

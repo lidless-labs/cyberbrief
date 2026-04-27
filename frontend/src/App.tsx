@@ -47,8 +47,8 @@ function GitHubFooter() {
       target="_blank"
       rel="noopener noreferrer"
       style={{
-        position: 'fixed', bottom: 8, right: 12, zIndex: 50,
-        display: 'flex', alignItems: 'center', gap: 6,
+        display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6,
+        maxWidth: 1368, margin: '0 auto', padding: '0 28px 16px',
         fontSize: 11, color: '#888', textDecoration: 'none',
         opacity: 0.4, transition: 'opacity 0.2s',
       }}

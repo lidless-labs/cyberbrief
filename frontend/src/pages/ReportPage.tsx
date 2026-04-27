@@ -2,22 +2,28 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReportStore } from '../stores/reportStore';
 import { apiClient } from '../api/client';
-import type { Report, TLPLevel, ReportSection, AttackTechnique } from '../types';
-
-const TLP_STYLES: Record<TLPLevel, string> = {
-  'TLP:CLEAR': 'tlp-clear',
-  'TLP:GREEN': 'tlp-green',
-  'TLP:AMBER': 'tlp-amber',
-  'TLP:AMBER+STRICT': 'tlp-amber-strict',
-  'TLP:RED': 'tlp-red',
-};
+import type { TLPLevel, AttackTechnique, ConfidenceLevel } from '../types';
 
 const TLP_BANNERS: Record<TLPLevel, string> = {
-  'TLP:CLEAR': '🟢 TLP:CLEAR — Disclosure is not limited.',
-  'TLP:GREEN': '🟢 TLP:GREEN — Limited disclosure, community only.',
-  'TLP:AMBER': '🟡 TLP:AMBER — Limited disclosure, restricted to participants\' organizations.',
-  'TLP:AMBER+STRICT': '🟡 TLP:AMBER+STRICT — Limited disclosure, restricted to participants only.',
-  'TLP:RED': '🔴 TLP:RED — Not for disclosure. Restricted to participants only.',
+  'TLP:CLEAR': 'TLP:CLEAR - Disclosure is not limited.',
+  'TLP:GREEN': 'TLP:GREEN - Limited disclosure, community only.',
+  'TLP:AMBER': 'TLP:AMBER - Limited disclosure, restricted to participants organizations.',
+  'TLP:AMBER+STRICT': 'TLP:AMBER+STRICT - Limited disclosure, restricted to participants only.',
+  'TLP:RED': 'TLP:RED - Not for disclosure. Restricted to participants only.',
+};
+
+const TLP_TONES: Record<TLPLevel, string> = {
+  'TLP:CLEAR': 'report-tone-clear',
+  'TLP:GREEN': 'report-tone-green',
+  'TLP:AMBER': 'report-tone-amber',
+  'TLP:AMBER+STRICT': 'report-tone-amber',
+  'TLP:RED': 'report-tone-red',
+};
+
+const CONFIDENCE_TONES: Record<ConfidenceLevel, string> = {
+  Low: 'report-tone-red',
+  Moderate: 'report-tone-amber',
+  High: 'report-tone-green',
 };
 
 /** Ordered list of ATT&CK tactics for the mini matrix */
@@ -125,7 +131,7 @@ export const ReportPage: React.FC = () => {
       ? getReportById(reportId) ?? currentReport
       : currentReport;
 
-  // ── Scrollspy ────────────────────────────────────────────────────────
+  // Scrollspy
   useEffect(() => {
     if (!report) return;
 
@@ -154,7 +160,7 @@ export const ReportPage: React.FC = () => {
     }
   }, []);
 
-  // ── Export handlers ──────────────────────────────────────────────────
+  // Export handlers
   const handleExportMarkdown = useCallback(async () => {
     if (!report) return;
     setExporting(true);
@@ -221,7 +227,7 @@ export const ReportPage: React.FC = () => {
     }
   }, [report]);
 
-  // ── Build TOC entries ──────────────────────────────────────────────
+  // Build TOC entries
   const tocEntries: { id: string; title: string }[] = [];
   if (report) {
     tocEntries.push({ id: 'bluf', title: 'BLUF' });
@@ -245,173 +251,144 @@ export const ReportPage: React.FC = () => {
     tocEntries.push({ id: 'bibliography', title: 'Bibliography' });
   }
 
-  // ── No report state ─────────────────────────────────────────────────
+  // No report state
   if (!report) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <div className="glass-panel p-12">
-          <span className="text-4xl mb-4 block">📄</span>
-          <h2 className="text-xl font-semibold text-gray-300 mb-2">
-            No Report Selected
-          </h2>
-          <p className="text-gray-500">
-            Generate a report from the Home page to view it here.
+      <div className="mx-auto max-w-4xl py-12">
+        <div className="desk-card p-10 text-center">
+          <p className="desk-kicker mb-5 justify-center"><span /> Report desk</p>
+          <h1 className="text-4xl">No report selected</h1>
+          <p className="mx-auto mt-4 max-w-xl leading-7" style={{ color: 'var(--desk-muted)' }}>
+            Generate a brief from the briefing desk to review BLUF findings, source provenance, indicators, ATT&CK mapping, and export-ready notes.
           </p>
+          <button
+            onClick={() => navigate('/home')}
+            className="mt-8 rounded-2xl px-5 py-3 font-bold text-white"
+            style={{ background: 'linear-gradient(135deg, var(--desk-accent), var(--desk-blue))' }}
+          >
+            Start a briefing
+          </button>
         </div>
       </div>
     );
   }
 
   const tacticGroups = groupByTactic(report.attackMapping);
+  const generatedAt = new Date(report.createdAt);
+  const sourceCount = report.sources.length;
+  const iocCount = report.iocs.length;
+  const techniqueCount = report.attackMapping.length;
+  const highConfidence = report.confidenceAssessments.filter((item) => item.confidence === 'High').length;
 
   return (
-    <div className="flex max-w-7xl mx-auto px-4 py-8 gap-6">
-      {/* ── TOC Sidebar ──────────────────────────────────────────────── */}
-      <aside className="hidden lg:block w-56 flex-shrink-0">
-        <nav className="sticky top-24 space-y-1">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-            Contents
-          </h3>
+    <div className="report-desk grid gap-5 py-6 xl:grid-cols-[230px_minmax(0,1fr)_300px]">
+      <aside className="hidden xl:block">
+        <nav className="desk-card sticky top-36 p-4">
+          <p className="desk-label mb-4">Report outline</p>
           {tocEntries.map((entry) => (
             <button
               key={entry.id}
               onClick={() => scrollToSection(entry.id)}
-              className={`block w-full text-left text-sm px-3 py-1.5 rounded-md transition-all ${
-                activeSectionId === entry.id
-                  ? 'text-cyber-400 bg-cyber-500/10 border-l-2 border-cyber-500'
-                  : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/30'
-              }`}
+              className={`report-toc-button ${activeSectionId === entry.id ? 'is-active' : ''}`}
             >
               {entry.title}
             </button>
           ))}
-
-          {/* Export Buttons */}
-          <div className="pt-4 mt-4 border-t border-gray-800 space-y-2">
-            <button
-              onClick={handleExportMarkdown}
-              disabled={exporting}
-              className="w-full px-3 py-2 text-sm rounded-md bg-cyber-500/10 text-cyber-400 hover:bg-cyber-500/20 transition-all disabled:opacity-50"
-            >
-              {exporting ? 'Exporting...' : '📝 Export Markdown'}
-            </button>
-            <button
-              onClick={handleExportHtml}
-              disabled={exportingHtml}
-              className="w-full px-3 py-2 text-sm rounded-md bg-cyber-500/10 text-cyber-400 hover:bg-cyber-500/20 transition-all disabled:opacity-50"
-            >
-              {exportingHtml ? 'Exporting...' : '🌐 Export HTML'}
-            </button>
-            {report.attackMapping.length > 0 && (
-              <button
-                onClick={handleDownloadNavigator}
-                disabled={downloadingNav}
-                className="w-full px-3 py-2 text-sm rounded-md bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-all disabled:opacity-50"
-              >
-                {downloadingNav ? 'Generating...' : '🎯 Navigator Layer'}
-              </button>
-            )}
-          </div>
         </nav>
       </aside>
 
-      {/* ── Main Content ─────────────────────────────────────────────── */}
-      <div className="flex-1 max-w-4xl">
-        {/* TLP Banner */}
-        <div className={`mb-6 p-3 rounded-lg border text-sm font-medium text-center ${
-          report.tlp === 'TLP:RED' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
-          report.tlp.includes('AMBER') ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' :
-          'bg-green-500/10 border-green-500/30 text-green-400'
-        }`}>
-          {TLP_BANNERS[report.tlp]}
-        </div>
-
-        {/* Header */}
-        <div className="glass-panel p-6 mb-6">
-          <div className="flex items-start justify-between mb-4">
+      <main className="min-w-0">
+        <article className="desk-card overflow-hidden">
+          <header className="p-6 md:p-8 lg:p-10">
+            <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-100">
+                <p className="desk-kicker mb-4"><span /> Intelligence product</p>
+                <h1 className="max-w-4xl text-4xl leading-tight md:text-5xl">
                 {report.topic}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Generated {new Date(report.createdAt).toLocaleString()} · {report.tier} Tier
-                · <code className="text-xs text-gray-600">{report.id}</code>
+                <p className="mt-4 text-sm" style={{ color: 'var(--desk-muted)' }}>
+                  Generated {generatedAt.toLocaleString()} | {report.tier} research | ID {report.id}
               </p>
             </div>
-            <span className={`threat-badge ${TLP_STYLES[report.tlp]}`}>
+              <span className={`report-badge ${TLP_TONES[report.tlp]}`}>
               {report.tlp}
             </span>
           </div>
 
-          {/* BLUF */}
+            <div className="report-meta-grid mb-7">
+              <div className="report-meta-cell">
+                <span>Sources</span>
+                <strong>{sourceCount}</strong>
+              </div>
+              <div className="report-meta-cell">
+                <span>Indicators</span>
+                <strong>{iocCount}</strong>
+              </div>
+              <div className="report-meta-cell">
+                <span>ATT&CK Techniques</span>
+                <strong>{techniqueCount}</strong>
+              </div>
+              <div className="report-meta-cell">
+                <span>High Confidence</span>
+                <strong>{highConfidence}</strong>
+              </div>
+            </div>
+
+            <div className={`report-tlp-strip ${TLP_TONES[report.tlp]}`}>
+              {TLP_BANNERS[report.tlp]}
+            </div>
+
           <div
             id="bluf"
             ref={(el) => { sectionRefs.current['bluf'] = el; }}
-            className="bg-cyber-500/5 border border-cyber-500/20 rounded-lg p-4"
+              className="report-bluf mt-6"
           >
-            <h3 className="text-xs font-semibold text-cyber-400 uppercase tracking-wider mb-2">
-              BLUF — Bottom Line Up Front
-            </h3>
-            <p className="text-gray-200 leading-relaxed">{report.bluf}</p>
+              <p className="desk-label mb-3">BLUF - Bottom Line Up Front</p>
+              <p>{report.bluf}</p>
           </div>
-        </div>
+          </header>
+        </article>
 
-        {/* Threat Actor Profile */}
         {report.threatActor && (
-          <div
+          <section
             id="threat-actor-profile"
             ref={(el) => { sectionRefs.current['threat-actor-profile'] = el; }}
-            className="glass-panel p-6 mb-6"
+            className="desk-card mt-5 p-6 md:p-7"
           >
-            <h2 className="text-lg font-semibold text-gray-200 mb-4">
-              Threat Actor Profile
-            </h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-gray-500">Name:</span>{' '}
-                <span className="text-gray-200 font-medium">
-                  {report.threatActor.name}
-                </span>
+            <p className="desk-kicker mb-5"><span /> Actor profile</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="report-fact">
+                <span>Name</span>
+                <strong>{report.threatActor.name}</strong>
               </div>
-              <div>
-                <span className="text-gray-500">Attribution:</span>{' '}
-                <span className="text-gray-200">
-                  {report.threatActor.attribution}
-                </span>
+              <div className="report-fact">
+                <span>Attribution</span>
+                <strong>{report.threatActor.attribution}</strong>
               </div>
               {report.threatActor.aliases.length > 0 && (
-                <div className="col-span-2">
-                  <span className="text-gray-500">Aliases:</span>{' '}
-                  <span className="text-gray-300">
-                    {report.threatActor.aliases.join(', ')}
-                  </span>
+                <div className="report-fact md:col-span-2">
+                  <span>Aliases</span>
+                  <strong>{report.threatActor.aliases.join(', ')}</strong>
                 </div>
               )}
               {report.threatActor.firstSeen && (
-                <div>
-                  <span className="text-gray-500">First Seen:</span>{' '}
-                  <span className="text-gray-300">
-                    {report.threatActor.firstSeen}
-                  </span>
+                <div className="report-fact">
+                  <span>First seen</span>
+                  <strong>{report.threatActor.firstSeen}</strong>
                 </div>
               )}
               {report.threatActor.lastActive && (
-                <div>
-                  <span className="text-gray-500">Last Active:</span>{' '}
-                  <span className="text-gray-300">
-                    {report.threatActor.lastActive}
-                  </span>
+                <div className="report-fact">
+                  <span>Last active</span>
+                  <strong>{report.threatActor.lastActive}</strong>
                 </div>
               )}
               {report.threatActor.tooling.length > 0 && (
-                <div className="col-span-2">
-                  <span className="text-gray-500">Tooling:</span>{' '}
-                  <div className="flex flex-wrap gap-1 mt-1">
+                <div className="report-fact md:col-span-2">
+                  <span>Tooling</span>
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {report.threatActor.tooling.map((tool) => (
-                      <span
-                        key={tool}
-                        className="px-2 py-0.5 text-xs rounded bg-gray-800 text-gray-300 border border-gray-700"
-                      >
+                      <span key={tool} className="report-chip">
                         {tool}
                       </span>
                     ))}
@@ -419,131 +396,128 @@ export const ReportPage: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Report Sections */}
         {report.sections.map((section) => (
-          <div
+          <section
             key={section.id}
             id={section.id}
             ref={(el) => { sectionRefs.current[section.id] = el; }}
-            className="glass-panel p-6 mb-4"
+            className="desk-card report-section-card mt-5 p-6 md:p-7"
           >
-            <h2 className="text-lg font-semibold text-gray-200 mb-3">
-              {section.title}
-            </h2>
-            <div className="text-gray-300 leading-relaxed">
+            <p className="desk-kicker mb-4"><span /> Briefing section</p>
+            <h2 className="text-3xl">{section.title}</h2>
+            <div className="report-prose mt-4">
               {renderContentWithFootnotes(section.content, section.citations)}
             </div>
-          </div>
+          </section>
         ))}
 
-        {/* IOCs */}
         {report.iocs.length > 0 && (
-          <div
+          <section
             id="iocs-table"
             ref={(el) => { sectionRefs.current['iocs-table'] = el; }}
-            className="glass-panel p-6 mb-4"
+            className="desk-card mt-5 overflow-hidden"
           >
-            <h2 className="text-lg font-semibold text-gray-200 mb-3">
-              Indicators of Compromise
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="border-b p-6" style={{ borderColor: 'var(--desk-border)' }}>
+              <p className="desk-kicker mb-3"><span /> Indicators</p>
+              <h2 className="text-3xl">Indicators of compromise</h2>
+            </div>
+            <div className="overflow-x-auto p-1">
+              <table className="report-table">
                 <thead>
-                  <tr className="text-left text-gray-500 border-b border-gray-800">
-                    <th className="pb-2 pr-4">Type</th>
-                    <th className="pb-2 pr-4">Value</th>
-                    <th className="pb-2">Context</th>
+                  <tr>
+                    <th>Type</th>
+                    <th>Value</th>
+                    <th>Context</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/50">
+                <tbody>
                   {report.iocs.map((ioc, i) => (
                     <tr key={`${ioc.type}-${ioc.value}-${i}`}>
-                      <td className="py-2 pr-4">
-                        <span className="px-2 py-0.5 rounded text-xs bg-gray-800 text-gray-300 uppercase font-mono">
-                          {ioc.type}
-                        </span>
+                      <td>
+                        <span className="report-chip">{ioc.type}</span>
                       </td>
-                      <td className="py-2 pr-4 font-mono text-cyber-400 text-xs break-all">
+                      <td className="break-all font-mono text-xs" style={{ color: 'var(--desk-accent)' }}>
                         {ioc.value}
                       </td>
-                      <td className="py-2 text-gray-400 text-xs">
-                        {ioc.context ?? '—'}
+                      <td style={{ color: 'var(--desk-muted)' }}>
+                        {ioc.context ?? 'No context'}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* ATT&CK Mapping Table */}
         {report.attackMapping.length > 0 && (
-          <div
+          <section
             id="attack-mapping"
             ref={(el) => { sectionRefs.current['attack-mapping'] = el; }}
-            className="glass-panel p-6 mb-4"
+            className="desk-card mt-5 overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-gray-200">
-                MITRE ATT&CK Mapping
+            <div className="flex flex-col gap-4 border-b p-6 md:flex-row md:items-center md:justify-between" style={{ borderColor: 'var(--desk-border)' }}>
+              <div>
+                <p className="desk-kicker mb-3"><span /> Technique mapping</p>
+                <h2 className="text-3xl">
+                  MITRE ATT&CK mapping
               </h2>
+              </div>
               <button
                 onClick={handleDownloadNavigator}
                 disabled={downloadingNav}
-                className="px-3 py-1.5 text-xs rounded-md bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-all disabled:opacity-50"
+                className="report-action-button"
               >
-                {downloadingNav ? '...' : '⬇ Navigator Layer'}
+                {downloadingNav ? 'Generating...' : 'Navigator layer'}
               </button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto p-1">
+              <table className="report-table">
                 <thead>
-                  <tr className="text-left text-gray-500 border-b border-gray-800">
-                    <th className="pb-2 pr-4">Technique ID</th>
-                    <th className="pb-2 pr-4">Name</th>
-                    <th className="pb-2 pr-4">Tactic</th>
-                    <th className="pb-2">Evidence</th>
+                  <tr>
+                    <th>Technique ID</th>
+                    <th>Name</th>
+                    <th>Tactic</th>
+                    <th>Evidence</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/50">
+                <tbody>
                   {report.attackMapping.map((tech) => (
                     <tr key={tech.techniqueId}>
-                      <td className="py-3 pr-4">
+                      <td>
                         <a
                           href={attackUrl(tech.techniqueId)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-mono text-xs text-cyber-400 hover:text-cyber-300 hover:underline"
+                          className="font-mono text-xs font-bold hover:underline"
+                          style={{ color: 'var(--desk-accent)' }}
                         >
                           {tech.techniqueId}
                         </a>
                       </td>
-                      <td className="py-3 pr-4 text-gray-200 font-medium text-sm">
+                      <td className="font-semibold">
                         {tech.name}
                       </td>
-                      <td className="py-3 pr-4">
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400 border border-gray-700 whitespace-nowrap">
-                          {tech.tactic}
-                        </span>
+                      <td>
+                        <span className="report-chip">{tech.tactic}</span>
                       </td>
-                      <td className="py-3">
+                      <td>
                         {tech.evidence.length > 0 ? (
                           <div className="space-y-1">
                             {tech.evidence.slice(0, 2).map((ev, i) => (
-                              <div key={i} className="pl-2 border-l-2 border-cyber-500/30">
-                                <p className="text-xs text-gray-400 italic leading-relaxed">
-                                  &ldquo;{ev.quote.length > 120 ? ev.quote.slice(0, 120) + '...' : ev.quote}&rdquo;
+                              <div key={i} className="border-l-2 pl-3" style={{ borderColor: 'rgba(155,47,66,0.32)' }}>
+                                <p className="text-xs italic leading-relaxed" style={{ color: 'var(--desk-muted)' }}>
+                                  "{ev.quote.length > 120 ? ev.quote.slice(0, 120) + '...' : ev.quote}"
                                 </p>
-                                <p className="text-[10px] text-gray-600">— {ev.source}</p>
+                                <p className="text-[10px]" style={{ color: '#7a6c62' }}>{ev.source}</p>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-600 italic">
+                          <span className="text-xs italic" style={{ color: 'var(--desk-muted)' }}>
                             {tech.description.length > 80 ? tech.description.slice(0, 80) + '...' : tech.description}
                           </span>
                         )}
@@ -553,19 +527,17 @@ export const ReportPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Mini ATT&CK Matrix Visualization */}
         {report.attackMapping.length > 0 && (
-          <div
+          <section
             id="attack-matrix"
             ref={(el) => { sectionRefs.current['attack-matrix'] = el; }}
-            className="glass-panel p-6 mb-4"
+            className="desk-card mt-5 p-6"
           >
-            <h2 className="text-lg font-semibold text-gray-200 mb-4">
-              ATT&CK Matrix View
-            </h2>
+            <p className="desk-kicker mb-3"><span /> Matrix view</p>
+            <h2 className="mb-5 text-3xl">ATT&CK matrix view</h2>
             <div className="overflow-x-auto">
               <div
                 className="grid gap-1"
@@ -578,7 +550,8 @@ export const ReportPage: React.FC = () => {
                 {TACTIC_ORDER.map((tactic) => (
                   <div
                     key={`header-${tactic}`}
-                    className="text-center text-[9px] font-semibold text-gray-400 uppercase tracking-wider pb-2 border-b border-gray-800"
+                    className="border-b pb-2 text-center text-[9px] font-bold uppercase tracking-wider"
+                    style={{ borderColor: 'var(--desk-border)', color: 'var(--desk-muted)' }}
                     title={tactic}
                   >
                     {tactic.length > 12 ? tactic.split(' ').map(w => w[0]).join('') : tactic}
@@ -597,7 +570,7 @@ export const ReportPage: React.FC = () => {
                             href={attackUrl(tech.techniqueId)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block px-1.5 py-1 rounded text-center text-[9px] font-mono transition-all hover:scale-105 hover:shadow-lg cursor-pointer"
+                            className="block rounded px-1.5 py-1 text-center font-mono text-[9px] transition-all hover:scale-105 hover:shadow-lg"
                             style={{
                               backgroundColor: `${TACTIC_COLORS[tactic] ?? '#e60d0d'}33`,
                               color: TACTIC_COLORS[tactic] ?? '#e60d0d',
@@ -616,110 +589,99 @@ export const ReportPage: React.FC = () => {
                 })}
               </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Confidence Assessments */}
         {report.confidenceAssessments.length > 0 && (
-          <div
+          <section
             id="confidence"
             ref={(el) => { sectionRefs.current['confidence'] = el; }}
-            className="glass-panel p-6 mb-4"
+            className="desk-card mt-5 p-6"
           >
-            <h2 className="text-lg font-semibold text-gray-200 mb-3">
-              Confidence Assessments
-            </h2>
-            <div className="space-y-2">
-              {report.confidenceAssessments.map((assessment, i) => {
-                const confidenceColors = {
-                  Low: 'text-red-400 bg-red-500/10',
-                  Moderate: 'text-amber-400 bg-amber-500/10',
-                  High: 'text-green-400 bg-green-500/10',
-                };
-                return (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-md bg-gray-800/20">
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${
-                        confidenceColors[assessment.confidence]
-                      }`}
-                    >
+            <p className="desk-kicker mb-3"><span /> Analytic confidence</p>
+            <h2 className="mb-5 text-3xl">Confidence assessments</h2>
+            <div className="grid gap-3">
+              {report.confidenceAssessments.map((assessment, i) => (
+                <div key={i} className="report-confidence">
+                  <span className={`report-badge ${CONFIDENCE_TONES[assessment.confidence]}`}>
                       {assessment.confidence}
                     </span>
                     <div>
-                      <p className="text-sm text-gray-200">
+                    <p className="font-semibold">
                         {assessment.finding}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                    <p className="mt-1 text-sm" style={{ color: 'var(--desk-muted)' }}>
                         {assessment.rationale}
                       </p>
                     </div>
                   </div>
-                );
-              })}
+              ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Endnotes */}
-        <div
+        <section
           id="endnotes"
           ref={(el) => { sectionRefs.current['endnotes'] = el; }}
-          className="glass-panel p-6 mb-4"
+          className="desk-card mt-5 p-6"
         >
-          <h2 className="text-lg font-semibold text-gray-200 mb-3">Endnotes</h2>
+          <p className="desk-kicker mb-3"><span /> Source notes</p>
+          <h2 className="mb-5 text-3xl">Endnotes</h2>
           {report.sources.length > 0 ? (
-            <ol className="space-y-2 list-decimal list-inside">
+            <ol className="space-y-3">
               {report.sources.map((source, i) => (
                 <li
                   key={i}
                   id={`endnote-${i + 1}`}
-                  className="text-sm text-gray-300"
+                  className="grid gap-2 text-sm md:grid-cols-[42px_minmax(0,1fr)]"
                 >
+                  <span className="report-chip self-start">{i + 1}</span>
+                  <span>
                   <a
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-cyber-400 hover:underline"
+                      className="font-semibold hover:underline"
+                      style={{ color: 'var(--desk-accent)' }}
                   >
                     {source.title}
                   </a>
-                  <span className="text-gray-500 text-xs ml-1">
-                    , accessed {new Date(source.accessedAt).toLocaleDateString()},{' '}
+                    <span className="ml-1 text-xs" style={{ color: 'var(--desk-muted)' }}>
+                      accessed {new Date(source.accessedAt).toLocaleDateString()},
                   </span>
                   <a
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-600 text-xs hover:text-gray-400 break-all"
+                      className="ml-1 break-all text-xs hover:underline"
+                      style={{ color: 'var(--desk-muted)' }}
                   >
                     {source.url}
                   </a>
-                  .
+                  </span>
                 </li>
               ))}
             </ol>
           ) : (
-            <p className="text-gray-500 text-sm">No sources to cite.</p>
+            <p className="text-sm" style={{ color: 'var(--desk-muted)' }}>No sources to cite.</p>
           )}
-        </div>
+        </section>
 
-        {/* Bibliography */}
-        <div
+        <section
           id="bibliography"
           ref={(el) => { sectionRefs.current['bibliography'] = el; }}
-          className="glass-panel p-6 mb-4"
+          className="desk-card mt-5 p-6"
         >
-          <h2 className="text-lg font-semibold text-gray-200 mb-3">
-            Bibliography
-          </h2>
+          <p className="desk-kicker mb-3"><span /> Bibliography</p>
+          <h2 className="mb-5 text-3xl">Bibliography</h2>
           {report.sources.length > 0 ? (
             <div className="space-y-3">
               {[...report.sources]
                 .sort((a, b) => a.title.localeCompare(b.title))
                 .map((source, i) => (
-                  <div key={i} className="text-sm text-gray-300 pl-8 -indent-8">
-                    &ldquo;{source.title}.&rdquo;{' '}
-                    <span className="text-gray-500">
+                  <div key={i} className="text-sm leading-7" style={{ color: 'var(--desk-muted)' }}>
+                    "{source.title}."{' '}
+                    <span>
                       Accessed{' '}
                       {new Date(source.accessedAt).toLocaleDateString('en-US', {
                         month: 'long',
@@ -732,7 +694,8 @@ export const ReportPage: React.FC = () => {
                       href={source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-cyber-400 hover:underline break-all"
+                      className="break-all hover:underline"
+                      style={{ color: 'var(--desk-accent)' }}
                     >
                       {source.url}
                     </a>
@@ -741,37 +704,53 @@ export const ReportPage: React.FC = () => {
                 ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No sources.</p>
+            <p className="text-sm" style={{ color: 'var(--desk-muted)' }}>No sources.</p>
           )}
-        </div>
+        </section>
+      </main>
 
-        {/* Mobile Export Buttons */}
-        <div className="lg:hidden flex flex-wrap gap-3 mt-6">
-          <button
-            onClick={handleExportMarkdown}
-            disabled={exporting}
-            className="flex-1 px-4 py-3 rounded-lg bg-cyber-500/10 text-cyber-400 font-medium hover:bg-cyber-500/20 transition-all disabled:opacity-50"
-          >
-            {exporting ? 'Exporting...' : '📝 Markdown'}
-          </button>
-          <button
-            onClick={handleExportHtml}
-            disabled={exportingHtml}
-            className="flex-1 px-4 py-3 rounded-lg bg-cyber-500/10 text-cyber-400 font-medium hover:bg-cyber-500/20 transition-all disabled:opacity-50"
-          >
-            {exportingHtml ? 'Exporting...' : '🌐 HTML'}
-          </button>
-          {report.attackMapping.length > 0 && (
-            <button
-              onClick={handleDownloadNavigator}
-              disabled={downloadingNav}
-              className="flex-1 px-4 py-3 rounded-lg bg-orange-500/10 text-orange-400 font-medium hover:bg-orange-500/20 transition-all disabled:opacity-50"
-            >
-              {downloadingNav ? 'Generating...' : '🎯 Navigator'}
+      <aside>
+        <div className="desk-card sticky top-36 p-5">
+          <p className="desk-label mb-4">Export packet</p>
+          <div className="grid gap-2">
+            <button onClick={handleExportMarkdown} disabled={exporting} className="report-action-button">
+              {exporting ? 'Exporting...' : 'Export Markdown'}
             </button>
+            <button onClick={handleExportHtml} disabled={exportingHtml} className="report-action-button">
+              {exportingHtml ? 'Exporting...' : 'Export HTML'}
+            </button>
+            {report.attackMapping.length > 0 && (
+              <button onClick={handleDownloadNavigator} disabled={downloadingNav} className="report-action-button">
+                {downloadingNav ? 'Generating...' : 'Navigator JSON'}
+              </button>
+            )}
+          </div>
+
+          <div className="my-5 h-px" style={{ backgroundColor: 'var(--desk-border)' }} />
+
+          <p className="desk-label mb-3">Source posture</p>
+          <div className="space-y-2">
+            <div className="report-side-stat"><span>Primary sources</span><strong>{sourceCount}</strong></div>
+            <div className="report-side-stat"><span>IOC rows</span><strong>{iocCount}</strong></div>
+            <div className="report-side-stat"><span>ATT&CK coverage</span><strong>{techniqueCount}</strong></div>
+          </div>
+
+          {report.sources.length > 0 && (
+            <>
+              <div className="my-5 h-px" style={{ backgroundColor: 'var(--desk-border)' }} />
+              <p className="desk-label mb-3">Top references</p>
+              <div className="space-y-3">
+                {report.sources.slice(0, 4).map((source) => (
+                  <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="block rounded-2xl border p-3 text-sm hover:bg-white/40" style={{ borderColor: 'var(--desk-border)' }}>
+                    <span className="line-clamp-2 font-semibold">{source.title}</span>
+                    <span className="mt-1 block truncate text-xs" style={{ color: 'var(--desk-muted)' }}>{source.url}</span>
+                  </a>
+                ))}
+              </div>
+            </>
           )}
         </div>
-      </div>
+      </aside>
     </div>
   );
 };
