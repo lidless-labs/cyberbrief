@@ -16,20 +16,20 @@ interface SuggestedTopic {
 }
 
 const SUGGESTED_TOPICS: SuggestedTopic[] = [
-  { label: 'GopherWhisper espionage against Mongolian government using Slack, Discord, and Outlook Graph C2', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Harvester Linux GoGra campaign targeting South Asia via fake PDFs and Outlook Graph mailbox C2', category: 'APT Groups', icon: '🕵️' },
-  { label: 'UNC6692 Teams help-desk impersonation pushing SNOWBELT and SNOWBASIN after email-bombing', category: 'APT Groups', icon: '🕵️' },
-  { label: 'UAT4356 ArcaneDoor follow-on using FIRESTARTER and LINE VIPER on Cisco Firepower appliances', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Bitwarden CLI 2026.4.0 compromise in Checkmarx campaign with bw1.js stealing GitHub and cloud secrets', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Checkmarx KICS poisoned Docker tags and VS Code extensions pulling mcpAddon.js credential stealer', category: 'Supply Chain', icon: '🔗' },
-  { label: 'Namastex npm worm hitting pgserve and @automagik/genie with self-propagating token theft', category: 'Supply Chain', icon: '🔗' },
-  { label: 'BlackFile vishing-led extortion against retail and hospitality using Salesforce and SharePoint API theft', category: 'Ransomware', icon: '💀' },
-  { label: 'Gentlemen ransomware affiliates expanding with 1,570-host SystemBC botnet-backed intrusions', category: 'Ransomware', icon: '💀' },
-  { label: 'Kyber ransomware targeting Windows and ESXi with Kyber1024-branded post-quantum extortion tooling', category: 'Ransomware', icon: '💀' },
-  { label: 'CVE-2026-34197 Apache ActiveMQ Classic code injection via exposed Jolokia endpoints under KEV exploitation', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-39987 Marimo pre-auth terminal WebSocket RCE now driving NKAbuse deployment', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-33626 LMDeploy SSRF exploited within 13 hours to hit IMDS, Redis, and internal admin surfaces', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-33825 BlueHammer Microsoft Defender LPE added to KEV after hands-on-keyboard zero-day attacks', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'SHADOW-EARTH-053 China-aligned Exchange and IIS N-day intrusions against Asian governments and Poland using Godzilla and ShadowPad', category: 'APT Groups', icon: '🕵️' },
+  { label: 'GLITTER CARP and SEQUIN CARP phishing ICIJ journalists and Uyghur, Tibetan, Taiwanese, and Hong Kong activists', category: 'APT Groups', icon: '🕵️' },
+  { label: 'OilRig APT34 Iranian protest lure chain hiding config in Google Drive PNGs and using Telegram Bot API C2', category: 'APT Groups', icon: '🕵️' },
+  { label: 'UNC6692 email bombing and Teams help-desk impersonation deploying Snowbelt, Snowglaze, and Snowbasin', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Mini Shai-Hulud SAP CAP npm compromise hitting mbt 1.2.48 and @cap-js db-service, postgres, and sqlite packages', category: 'Supply Chain', icon: '🔗' },
+  { label: 'PyTorch Lightning PyPI 2.6.2 and 2.6.3 compromise running credential stealer on import with GitHub repo poisoning', category: 'Supply Chain', icon: '🔗' },
+  { label: 'Mini Shai-Hulud intercom-client 7.0.4 and intercom/intercom-php 5.0.2 compromise via stolen publishing flow', category: 'Supply Chain', icon: '🔗' },
+  { label: 'VECT 2.0 RaaS Windows Linux ESXi locker acting as a wiper after nonce bug with TeamPCP and BreachForums affiliate push', category: 'Ransomware', icon: '💀' },
+  { label: 'The Gentlemen RaaS scaling past 320 claimed victims using SystemBC, Cobalt Strike, Mimikatz, and GPO deployment', category: 'Ransomware', icon: '💀' },
+  { label: 'Storm-1175 exploiting ConnectWise ScreenConnect CVE-2024-1708 and CVE-2024-1709 to deploy Medusa ransomware', category: 'Ransomware', icon: '💀' },
+  { label: 'CVE-2026-41940 cPanel & WHM and WP2 auth bypass via CRLF session injection added to CISA KEV', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-31431 Linux kernel Copy Fail algif_aead LPE to root added to CISA KEV for active exploitation', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-32202 Windows Shell zero-click NTLM hash leak from incomplete CVE-2026-21510 patch under active exploitation', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-3844 Breeze Cache WordPress unauthenticated file upload dropping PHP webshells when local Gravatars are enabled', category: 'Vulnerabilities', icon: '🐛' },
 ];
 
 const CATEGORIES = ['APT Groups', 'Supply Chain', 'Ransomware', 'Vulnerabilities'] as const;
