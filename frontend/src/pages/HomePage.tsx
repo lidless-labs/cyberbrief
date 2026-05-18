@@ -16,20 +16,20 @@ interface SuggestedTopic {
 }
 
 const SUGGESTED_TOPICS: SuggestedTopic[] = [
-  { label: 'UAT-8302 China-nexus government intrusions in South America and southeastern Europe using NetDraft, CloudSorcerer, SNOWLIGHT, Deed RAT, and Draculoader', category: 'APT Groups', icon: '🕵️' },
+  { label: 'MuddyWater Iran-nexus false-flag Chaos ransomware intrusion with Microsoft Teams social engineering, AnyDesk, DWAgent, and custom Game.exe backdoor', category: 'APT Groups', icon: '🕵️' },
   { label: 'ScarCruft APT37 sqgame.net supply chain compromise deploying BirdCall on Android and Windows against ethnic Koreans in China', category: 'APT Groups', icon: '🕵️' },
-  { label: 'MuddyWater Microsoft Teams social engineering false-flag Chaos ransomware intrusion with AnyDesk, DWAgent, and custom Game.exe backdoor', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Operation HookedWing phishing campaign stealing 2,000 credentials from 500+ aviation, government, energy, logistics, and technology organizations', category: 'APT Groups', icon: '🕵️' },
-  { label: 'Checkmarx Jenkins AST plugin backdoor published to Jenkins Marketplace after TeamPCP Trivy supply chain intrusion', category: 'Supply Chain', icon: '🔗' },
+  { label: 'FBI neutralizes APT28 GRU Military Unit 26165 SOHO router botnet via court-authorized operation targeting Russian intelligence covert network', category: 'APT Groups', icon: '🕵️' },
+  { label: 'APT33 Iran-nexus targeting critical infrastructure during Operation Epic Fury cyber escalation alongside US-Israel-Iran conflict', category: 'APT Groups', icon: '🕵️' },
+  { label: 'Mini Shai-Hulud / TeamPCP TanStack supply chain worm: CVE-2026-45321 (CVSS 9.6) compromising 84 npm artifacts across 42 @tanstack/*, @mistralai/*, and @uipath/* packages, hitting 2 OpenAI employee devices', category: 'Supply Chain', icon: '🔗' },
+  { label: 'JDownloader watering hole supply chain attack (May 6-7): official Windows installer swapped with malware-laced binaries on download page', category: 'Supply Chain', icon: '🔗' },
+  { label: 'GemStuffer campaign abuses 150+ RubyGems packages as data exfiltration channel scraping UK council portals, triggers RubyGems signup suspension', category: 'Supply Chain', icon: '🔗' },
   { label: 'DAEMON Tools signed installer supply chain attack since April 8 delivering targeted backdoor from official downloads', category: 'Supply Chain', icon: '🔗' },
-  { label: 'QLNX Quasar Linux RAT stealing developer secrets from npm, PyPI, Git, AWS, Kubernetes, Docker, Vault, and env files', category: 'Supply Chain', icon: '🔗' },
-  { label: 'ZiChatBot PyPI packages abusing Zulip APIs for command and control and credential theft in Python dependency chains', category: 'Supply Chain', icon: '🔗' },
+  { label: 'ShinyHunters Instructure Canvas LMS breach: 3.65TB stolen from 275M users across ~9000 schools, Instructure pays ransom, IC3/FBI PSA issued', category: 'Ransomware', icon: '💀' },
   { label: 'The Gentlemen RaaS 2026 surge past 320 victims with SystemBC tunneling and multi-platform lockers for Windows, Linux, NAS, BSD, and ESXi', category: 'Ransomware', icon: '💀' },
-  { label: 'World Leaks Hunters International rebrand publishing 8.5TB from Mediaworks in Hungarian media extortion attack', category: 'Ransomware', icon: '💀' },
-  { label: 'Interlock Nobles County ransomware response requiring Minnesota National Guard cyber protection team support', category: 'Ransomware', icon: '💀' },
-  { label: 'CVE-2026-0300 PAN-OS User-ID Authentication Portal RCE zero-day exploited by CL-STA-1132 with Earthworm and ReverseSocks5 tunneling', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-6973 Ivanti Endpoint Manager Mobile remote code execution exploited as a zero-day with May 10 CISA deadline', category: 'Vulnerabilities', icon: '🐛' },
-  { label: 'CVE-2026-42208 BerriAI LiteLLM SQL injection exploited within 36 hours to target proxy API keys and LLM credentials', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'Unoaerre Italian gold jewelry manufacturer hit with €3.8M Bitcoin ransomware demand disrupting operational systems', category: 'Ransomware', icon: '💀' },
+  { label: 'Microsoft May 2026 Patch Tuesday: 30 critical CVEs led by CVE-2026-41089 (Windows DNS RCE, CVSS 9.8), CVE-2026-42898/42833 (Dynamics 365 RCE), multiple Word RCEs assessed exploitation more likely', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-34260 SAP S/4HANA Enterprise Search SQL injection (CVSS 9.6, HotNews priority) enabling full database compromise', category: 'Vulnerabilities', icon: '🐛' },
+  { label: 'CVE-2026-41103 Microsoft SSO Plugin for Jira and Confluence Elevation of Privilege, with 14 total CVEs scoring CVSS 9.0+ this Patch Tuesday', category: 'Vulnerabilities', icon: '🐛' },
 ];
 
 const CATEGORIES = ['APT Groups', 'Supply Chain', 'Ransomware', 'Vulnerabilities'] as const;
