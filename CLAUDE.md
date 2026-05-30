@@ -39,7 +39,6 @@ cd frontend && npx vite build
 
 ## Style Guide
 - Dark theme, cybersecurity aesthetic
-- No em dashes. Ever.
 - BLUF writing style for all generated content
 - Citations follow CITATION_STYLE.md format
 
@@ -47,44 +46,4 @@ cd frontend && npx vite build
 - Run `tsc` standalone (it fails, use `npx vite build` directly)
 - Change the BLUF writing format (it's the core product identity)
 
-## Git Rules
-- Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`
-- Never add Co-Authored-By lines or mention AI in commits
-- No em dashes in commit messages
-
----
-
-## OpenClaw Sync Protocol
-
-An AI assistant (clawdbot) runs in OpenClaw and manages this workspace. OpenClaw on automation-host is the canonical long-term memory. Claude Code may keep local or session memory, but durable knowledge must flow back through Memory Handoffs.
-
-### After completing a substantial task
-
-If you learned anything durable, create a Memory Handoff in:
-
-```text
-.claude/memory-handoffs/
-```
-
-Use the standard format documented in:
-
-```text
-~/.openclaw/workspace/docs/claude-code-memory-handoff.md
-```
-
-### Durable knowledge includes
-- architecture decisions
-- workflow changes
-- root causes and non-obvious fixes
-- setup and environment gotchas
-- security findings
-- reusable commands and patterns
-- durable research findings
-- user preferences or working conventions
-
-### Rules
-1. Do not wait to be reminded. If the work produced durable knowledge, write the handoff automatically.
-2. Be specific. Name files, commands, errors, and the actual decision made.
-3. Do not edit `MEMORY.md` directly. OpenClaw curates long-term memory.
-4. Do not write directly into random memory files. Use the handoff path so automation-host can ingest and route it cleanly.
-5. Commit and push your work normally. The handoff complements git history. It does not replace it.
+> Global rules (git, formatting, memory handoff) live in ~/.claude/CLAUDE.md and apply automatically.
