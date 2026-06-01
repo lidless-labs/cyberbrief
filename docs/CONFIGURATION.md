@@ -170,7 +170,7 @@ Production recommendations:
 ### CORS Errors
 - **Symptom:** Browser console shows "Access to XMLHttpRequest blocked by CORS policy"
 - **Fix:** Ensure `CORS_ORIGINS` matches your frontend URL exactly (including protocol and port)
-- **Example:** If frontend is `http://192.168.1.100:5188`, use `CORS_ORIGINS=http://192.168.1.100:5188`
+- **Example:** If frontend is `https://cyberbrief.example`, use `CORS_ORIGINS=https://cyberbrief.example`
 
 ### API Key Errors
 - **Symptom:** "Invalid API key" when running research
