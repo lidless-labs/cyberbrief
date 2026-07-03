@@ -1,14 +1,12 @@
 <p align="center">
-  <img src="docs/assets/cyberbrief-banner.jpg" alt="cyberbrief banner" width="900">
+  <img src="docs/assets/cyberbrief-social-preview.jpg" alt="cyberbrief banner" width="900">
 </p>
 
-<h1 align="center">📋 Solomon's CyberBRIEF</h1>
+<h1 align="center">CyberBRIEF</h1>
 
 <p align="center"><strong>AI-powered cyber threat intelligence research and reporting.</strong></p>
 
-<p align="center">
-  <a href="https://solomonneas.dev/projects/cyberbrief"><img src="https://shieldcn.dev/badge/Portfolio-solomonneas.dev-22c55e.svg" alt="Portfolio"></a>
-</p>
+<p align="center"><a href="https://lidless.dev/cyberbrief"><strong>Website</strong></a> &middot; <a href="#what-it-does">What it does</a> &middot; <a href="#install">Install</a></p>
 
 <p align="center">
   <img src="https://shieldcn.dev/badge/React-18-61DAFB.svg?logo=react&logoColor=white" alt="React">
@@ -20,7 +18,9 @@
   <img src="https://shieldcn.dev/badge/license-MIT-green.svg" alt="MIT License">
 </p>
 
-CyberBRIEF transforms raw threat data into executive-grade BLUF reports with MITRE ATT&CK mapping, IOC extraction, and academic citations. Three research tiers provide flexibility from free open-source intelligence to deep AI-powered research.
+## What it does
+
+CyberBRIEF transforms raw threat data into executive-grade BLUF reports with MITRE ATT&CK mapping, IOC extraction, and academic citations. Three research tiers provide flexibility from free open-source intelligence to deep AI-powered research. Unlike a generic chatbot workflow, the app keeps report structure, TLP labels, citations, IOCs, and ATT&CK coverage in one exportable package.
 
 ![CyberBRIEF](docs/screenshots/dashboard.png)
 
@@ -41,16 +41,17 @@ CyberBRIEF transforms raw threat data into executive-grade BLUF reports with MIT
 
 ---
 
-## Quick Start
+## Install
 
 ```bash
 git clone https://github.com/solomonneas/cyberbrief.git
 cd cyberbrief
 
-# Backend
+python3 -m venv .venv
+. .venv/bin/activate
 pip install -r backend/requirements.txt
+(cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000) &
 
-# Frontend
 cd frontend && npm install && npm run dev
 ```
 
@@ -59,7 +60,7 @@ Backend: **http://localhost:8000**
 
 ---
 
-## Tech Stack
+## Tech stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
@@ -76,7 +77,7 @@ Backend: **http://localhost:8000**
 
 ---
 
-## Research Tiers
+## Research tiers
 
 | Tier | Sources | AI Model | Use Case |
 |------|---------|----------|----------|
@@ -86,7 +87,7 @@ Backend: **http://localhost:8000**
 
 ---
 
-## Project Structure
+## Project structure
 
 ```text
 cyberbrief/
