@@ -2,6 +2,9 @@
   <img src="docs/assets/cyberbrief-social-preview.jpg" alt="cyberbrief banner" width="900">
 </p>
 
+<p align="center">
+  <a href="https://lidless.dev"><img src="docs/assets/marks/cyberbrief-circle.png" width="48" alt="Lidless Labs"></a>
+</p>
 <h1 align="center">CyberBRIEF</h1>
 
 <p align="center"><strong>AI-powered cyber threat intelligence research and reporting.</strong></p>
@@ -146,3 +149,11 @@ See [CONFIGURATION.md](docs/CONFIGURATION.md) for environment variables and API 
 ## License
 
 MIT. See [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center"><a href="https://lidless.dev">Part of <strong>Lidless Labs</strong></a> &middot; the eye does not close</p>
+
+<p align="center"><sub><strong>Threat Intelligence & OSINT:</strong> <a href="https://github.com/lidless-labs/intel-workbench">intel-workbench</a> &middot; <a href="https://github.com/lidless-labs/maltego-mcp">maltego-mcp</a> &middot; <a href="https://github.com/lidless-labs/vervet">vervet</a></sub></p>
+
+<p align="center"><sub><a href="https://lidless.dev">All tools</a> &middot; <a href="https://github.com/lidless-labs">Lidless Labs on GitHub</a></sub></p>
