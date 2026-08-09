@@ -141,7 +141,7 @@ export const SettingsPage: React.FC = () => {
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-200 mb-2">🔑 API Keys (BYOK)</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Bring your own API keys to unlock higher research tiers. Keys are stored locally in your browser and never sent to third parties.
+          Bring your own API keys to unlock higher research tiers. Keys are stored in your browser&apos;s localStorage and included in requests to the CyberBRIEF backend when used; the backend receives them and forwards them to your selected API providers. CyberBRIEF is not intended to persist keys server-side, but a hosted operator may access them in transit through normal logging, monitoring, or security boundaries. If you do not trust the operator, self-host CyberBRIEF or avoid entering keys here.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {API_KEY_CONFIGS.map((config) => {
