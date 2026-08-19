@@ -14,10 +14,12 @@ verify_backend() (
   trap 'rm -rf "$venv_dir"' EXIT
 
   python3 -m venv "$venv_dir"
-  "$venv_dir/bin/python" -m pip install --disable-pip-version-check -r "$repo_root/backend/requirements.txt"
+  "$venv_dir/bin/python" -m pip install --disable-pip-version-check -r "$repo_root/backend/requirements-dev.txt"
   "$venv_dir/bin/python" -m compileall -q "$repo_root/backend"
   PYTHONPATH="$repo_root/backend" "$venv_dir/bin/python" -c \
     'import importlib, pkgutil; [importlib.import_module(module.name) for module in pkgutil.walk_packages(["backend"])]'
+  # Compile+import only prove the modules load. Run the suite so assertions count.
+  PYTHONPATH="$repo_root/backend" "$venv_dir/bin/python" -m pytest "$repo_root/backend/tests" -q
 )
 
 case "${1:-all}" in
