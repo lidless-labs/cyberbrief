@@ -106,9 +106,14 @@ export const DocsPage: React.FC = () => {
             <p>
               CyberBRIEF follows the{' '}
               <strong className="text-gray-300">BYOK</strong> (Bring Your Own
-              Key) model — your API keys are stored locally in your browser and
-              never transmitted to third-party servers beyond the API providers
-              themselves.
+              Key) model. API keys are stored in your browser&apos;s
+              localStorage, included in requests to the CyberBRIEF backend when
+              you run research, and forwarded to your selected API providers.
+              CyberBRIEF is not intended to persist keys server-side, but a
+              hosted operator and its logging, monitoring, and security
+              boundaries may still access keys in transit. If you do not trust a
+              hosted deployment, self-host CyberBRIEF or avoid entering keys in
+              the browser.
             </p>
           </div>
         </section>
@@ -399,7 +404,7 @@ export const DocsPage: React.FC = () => {
             />
             <FAQItem
               question="Where are my API keys stored?"
-              answer="API keys are stored in your browser's localStorage. They are never sent to any server other than the respective API provider (Brave, Perplexity, Gemini, etc.)."
+              answer="API keys are stored in your browser's localStorage. When used for research, they are sent to the CyberBRIEF backend and then to the respective provider (Brave, Perplexity, Gemini, etc.). The backend is not intended to persist keys server-side, but a hosted operator may access them in transit through normal logging, monitoring, or security boundaries. Self-host CyberBRIEF or avoid entering browser keys if you do not trust the operator."
             />
             <FAQItem
               question="What is the rate limit for Free tier?"
