@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+verify_frontend() {
+  cd "$repo_root/frontend"
+  npm ci
+  npm run build
+}
+
+verify_backend() (
+  venv_dir="$(mktemp -d "${TMPDIR:-/tmp}/cyberbrief-verify.XXXXXX")"
+  trap 'rm -rf "$venv_dir"' EXIT
+
+  python3 -m venv "$venv_dir"
+  "$venv_dir/bin/python" -m pip install --disable-pip-version-check -r "$repo_root/backend/requirements.txt"
+  "$venv_dir/bin/python" -m compileall -q "$repo_root/backend"
+  PYTHONPATH="$repo_root/backend" "$venv_dir/bin/python" -c \
+    'import importlib, pkgutil; [importlib.import_module(module.name) for module in pkgutil.walk_packages(["backend"])]'
+)
+
+case "${1:-all}" in
+  frontend)
+    verify_frontend
+    ;;
+  backend)
+    cd "$repo_root"
+    verify_backend
+    ;;
+  all)
+    verify_frontend
+    cd "$repo_root"
+    verify_backend
+    ;;
+  *)
+    echo "Usage: scripts/verify [frontend|backend|all]" >&2
+    exit 2
+    ;;
+esac
