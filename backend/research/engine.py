@@ -8,7 +8,15 @@ import time
 import logging
 from typing import Optional
 
-from models import ResearchBundle, ResearchTier, ResearchMetadata, ApiKeys, SearchResult, SourceInput
+from models import (
+    ApiKeys,
+    ResearchBundle,
+    ResearchMetadata,
+    ResearchTier,
+    SearchResult,
+    SkippedSource,
+    SourceInput,
+)
 from research.brave import search_brave
 from research.gemini import synthesize_gemini
 from research.perplexity import search_perplexity_sonar, deep_research_perplexity, PerplexityNotAvailable
@@ -136,29 +144,52 @@ async def run_research_from_sources(
     extract_start = time.monotonic()
 
     extracted: list[dict] = []
+    skipped: list[SkippedSource] = []
 
-    # Process all sources
+    # Process all sources. Anything that yields no content is recorded in
+    # skipped so the analyst can see it was not read, instead of dropping it.
     for source in sources:
         if source.type == "url":
             result = await extract_from_url(source.value)
             if result:
                 extracted.append(result)
+            else:
+                skipped.append(SkippedSource(
+                    url=source.value,
+                    reason="Could not fetch or extract readable content from this URL.",
+                ))
         elif source.type == "text":
             label = source.label or "User-provided text"
             extracted.append(extract_from_text(source.value, label))
         elif source.type == "pdf":
+            pdf_label = source.label or "Uploaded PDF"
             try:
                 pdf_bytes = base64.b64decode(source.value)
-                result = await _extract_pdf_bytes(pdf_bytes, source.label or "Uploaded PDF")
-                if result:
-                    extracted.append(result)
             except Exception as e:
-                logger.warning("Failed to decode/extract PDF: %s", e)
+                logger.warning("Failed to decode PDF %s: %s", pdf_label, e)
+                skipped.append(SkippedSource(url=pdf_label, reason="PDF data is not valid base64."))
+                continue
+            result = await _extract_pdf_bytes(pdf_bytes, pdf_label)
+            if result:
+                extracted.append(result)
+            else:
+                skipped.append(SkippedSource(
+                    url=pdf_label,
+                    reason="PDF could not be read: it is too large, corrupt, encrypted, or has no extractable text.",
+                ))
         else:
             logger.warning("Unknown source type: %s", source.type)
+            skipped.append(SkippedSource(
+                url=source.label or source.type,
+                reason=f"Unsupported source type: {source.type!r}.",
+            ))
 
     if not extracted:
-        raise ValueError("No content could be extracted from the provided sources.")
+        detail = "; ".join(f"{s.url}: {s.reason}" for s in skipped)
+        raise ValueError(
+            "No content could be extracted from the provided sources."
+            + (f" Skipped: {detail}" if detail else "")
+        )
 
     extract_duration_ms = int((time.monotonic() - extract_start) * 1000)
     logger.info(
@@ -210,6 +241,7 @@ async def run_research_from_sources(
         total_duration_ms=total_duration_ms,
         search_provider="user-sources",
         synthesis_model=synthesis_model,
+        skipped_sources=skipped,
     )
 
     return bundle

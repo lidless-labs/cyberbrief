@@ -136,6 +136,8 @@ export interface ResearchBundle {
     totalDurationMs: number;
     searchProvider: string;
     synthesisModel: string;
+    /** User-provided sources that could not be read and were left out of synthesis. */
+    skippedSources?: { url: string; reason: string }[];
   };
 }
 

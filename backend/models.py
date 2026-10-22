@@ -148,12 +148,19 @@ class SearchResult(BaseModel):
     model_config = {"populate_by_name": True}
 
 
+class SkippedSource(BaseModel):
+    """A user-provided source that could not be read and was left out of synthesis."""
+    url: str
+    reason: str
+
+
 class ResearchMetadata(BaseModel):
     search_duration_ms: int = Field(alias="searchDurationMs", default=0)
     synthesis_duration_ms: int = Field(alias="synthesisDurationMs", default=0)
     total_duration_ms: int = Field(alias="totalDurationMs", default=0)
     search_provider: str = Field(alias="searchProvider", default="brave")
     synthesis_model: str = Field(alias="synthesisModel", default="gemini-2.0-flash")
+    skipped_sources: list[SkippedSource] = Field(alias="skippedSources", default_factory=list)
 
     model_config = {"populate_by_name": True}
 
