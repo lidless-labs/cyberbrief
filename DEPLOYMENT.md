@@ -134,11 +134,66 @@ The `firebase.json` config rewrites `/api/**` to the Cloud Run service and serve
 (OpenAI, Perplexity, Brave Search, Gemini) in the Settings page. Keys are stored
 in the browser and sent with each request.
 
-The only environment variable the server uses:
+Optional server settings:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `8000` | HTTP listen port (set automatically by most platforms) |
+| `FORWARDED_ALLOW_IPS` | empty | Peers whose `X-Forwarded-For` header is trusted. See below |
+| `RATE_LIMIT_PER_HOUR` | `3` | Research requests per client per rolling hour |
+| `RATE_LIMIT_PER_DAY` | `5` | Research requests per client per rolling 24 hours |
+
+---
+
+## Client Addresses Behind a Proxy
+
+The research endpoints (`/api/research` and `/api/research/from-sources`) are rate
+limited per client address. On every supported platform the container sits behind
+the platform's reverse proxy, so the socket peer is the proxy, not the visitor.
+Unless uvicorn is told to trust that proxy, every visitor lands in the same bucket
+and the whole site shares one allowance.
+
+Both Dockerfiles start uvicorn with `--proxy-headers --forwarded-allow-ips
+"$FORWARDED_ALLOW_IPS"`. uvicorn only reads `X-Forwarded-For` when the socket peer
+matches that list. It then walks the header from the right and uses the first
+address that is not itself trusted. The default is empty, which trusts nobody:
+a spoofed `X-Forwarded-For` is ignored and clients are keyed on the socket peer.
+That is safe but puts everyone behind a proxy in one bucket.
+
+**Do not set `FORWARDED_ALLOW_IPS=*`.** With `*`, uvicorn takes the leftmost
+`X-Forwarded-For` entry. Railway, Render and Fly.io append to whatever header the
+caller sent, so the leftmost entry is caller controlled and anyone can pick a new
+bucket per request.
+
+| Platform | Value | Notes |
+|----------|-------|-------|
+| Docker, exposed directly | empty | No proxy, the socket peer is the client |
+| Docker behind nginx, Caddy or Traefik | the proxy's address or its Docker network CIDR | The proxy must set `X-Forwarded-For`. Find the network with `docker network inspect` |
+| Fly.io | `172.16.0.0/12,<app IPv4>,<app IPv6>` | Fly Proxy connects from `172.16.x.x`, and Fly puts your app's own address last in `X-Forwarded-For`, so list the addresses from `fly ips list` too |
+| Railway | `10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,fc00::/7` | Railway does not publish its edge range. The service is only reachable through the edge, which appends the client last, so trusting private ranges selects the real client |
+| Render | same as Railway | Render appends to a caller-supplied `X-Forwarded-For`. Run the check below before relying on it |
+| Cloud Run behind Firebase Hosting | empty until checked | The Firebase hop adds its own entries. Start from the Railway value and run the check below |
+
+Set the value as a platform environment variable (Railway and Render dashboards,
+`[env]` in `fly.toml`, `--set-env-vars` on Cloud Run, `-e` for Docker).
+
+### Check it
+
+uvicorn's access log prints the address the rate limiter uses. After deploying:
+
+```bash
+curl -s https://your-app.example/api/research -H 'content-type: application/json' \
+  -d '{"topic":"test"}' -H 'X-Forwarded-For: 198.51.100.1'
+```
+
+The log line for that request must show your own public IP. If it shows the
+platform's internal address, the proxy is not trusted yet and all visitors still
+share a bucket. If it shows `198.51.100.1`, the setting trusts caller input: set
+`FORWARDED_ALLOW_IPS` back to empty and narrow the value before trying again.
+
+The limiter keeps at most 10,000 client addresses in memory and drops the least
+recently active one when full. A client's entry is removed once its last request
+is more than 24 hours old.
 
 ---
 
@@ -182,3 +237,9 @@ docker run -e PORT=3000 -p 3000:3000 cyberbrief
 
 For reverse proxy setups (nginx, Caddy, Traefik), point the proxy to the container
 port and set appropriate upstream timeouts (at least 7 minutes for Deep Research).
+Set `FORWARDED_ALLOW_IPS` to the proxy's address so rate limits apply per visitor
+(see [Client Addresses Behind a Proxy](#client-addresses-behind-a-proxy)):
+
+```bash
+docker run -e FORWARDED_ALLOW_IPS=<proxy network CIDR> -p 8000:8000 cyberbrief
+```

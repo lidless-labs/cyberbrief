@@ -30,6 +30,11 @@ COPY --from=frontend-build /build/dist /app/static
 # Expose port (Railway/Render/Fly.io set PORT env var)
 ENV PORT=8000
 
+# X-Forwarded-For is trusted only from the peers listed in FORWARDED_ALLOW_IPS.
+# Empty means trust none, so each client is identified by its socket peer.
+# DEPLOYMENT.md lists the value to set behind each platform's proxy.
+ENV FORWARDED_ALLOW_IPS=""
+
 # Long timeouts for Deep Research tier (up to 6 min per request)
 # --timeout-keep-alive keeps idle connections open between proxy hops
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT} --timeout-keep-alive 400"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT} --proxy-headers --forwarded-allow-ips \"${FORWARDED_ALLOW_IPS}\" --timeout-keep-alive 400"]
