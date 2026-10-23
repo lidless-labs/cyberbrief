@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import io
 import ipaddress
 import logging
 import re
@@ -11,6 +12,7 @@ from typing import Optional, Union
 from urllib.parse import urljoin, urlparse, urlunparse
 
 import httpx
+from pypdf import PdfReader
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +20,7 @@ logger = logging.getLogger(__name__)
 MAX_URL_COUNT = 20
 MAX_TEXT_LENGTH = 500_000  # 500KB of text
 MAX_PDF_BYTES = 10 * 1024 * 1024  # 10MB per PDF
+MAX_PDF_PAGES = 100  # pages read per PDF
 FETCH_TIMEOUT = 15.0
 MAX_REDIRECTS = 5
 ALLOWED_SCHEMES = frozenset({"http", "https"})
@@ -242,37 +245,40 @@ async def extract_from_url(url: str) -> Optional[dict]:
 
 
 async def _extract_pdf_bytes(content: bytes, url: str) -> Optional[dict]:
-    """Extract text from PDF bytes using pymupdf if available, else basic fallback."""
+    """Extract text from PDF bytes with pypdf.
+
+    Returns None (and logs a warning) when the PDF is too large, cannot be
+    parsed, is encrypted, or has no extractable text (e.g. image-only scans),
+    so callers never treat a placeholder as the document's content.
+    """
     if len(content) > MAX_PDF_BYTES:
         logger.warning("PDF too large (%d bytes), skipping: %s", len(content), url)
         return None
-    
+
     try:
-        import fitz  # pymupdf
-        doc = fitz.open(stream=content, filetype="pdf")
+        reader = PdfReader(io.BytesIO(content))
+        if reader.is_encrypted:
+            logger.warning("PDF is encrypted, cannot extract text from: %s", url)
+            return None
+
         text_parts = []
-        for page in doc:
-            text_parts.append(page.get_text())
-        doc.close()
-        
-        full_text = "\n".join(text_parts)
-        title = url.split("/")[-1].replace(".pdf", "").replace("-", " ").replace("_", " ")
-        
-        return {
-            "title": title,
-            "url": url,
-            "snippet": full_text[:10000],
-        }
-    except ImportError:
-        logger.warning("pymupdf not installed, cannot extract PDF text from: %s", url)
-        return {
-            "title": url.split("/")[-1],
-            "url": url,
-            "snippet": "[PDF content — install pymupdf for text extraction]",
-        }
+        for page in reader.pages[:MAX_PDF_PAGES]:
+            text_parts.append(page.extract_text() or "")
     except Exception as e:
         logger.warning("PDF extraction failed for %s: %s", url, e)
         return None
+
+    full_text = "\n".join(text_parts).strip()
+    if not full_text:
+        logger.warning("PDF has no extractable text (image-only or empty): %s", url)
+        return None
+
+    title = url.split("/")[-1].replace(".pdf", "").replace("-", " ").replace("_", " ")
+    return {
+        "title": title,
+        "url": url,
+        "snippet": full_text[:10000],
+    }
 
 
 def extract_from_text(text: str, label: str = "User-provided text") -> dict:
