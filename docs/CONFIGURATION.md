@@ -40,7 +40,26 @@ CyberBRIEF requires several API keys and configuration options. Set these before
 - Example: `/data/cyberbrief_reports.db` or `sqlite:///./reports.db`
 - Note: In production, consider PostgreSQL for scalability
 
-## Setup Instructions
+### Optional: Rate Limiting
+
+The research endpoints (`/api/research` and `/api/research/from-sources`) share one
+per-client allowance. Requests over the limit get HTTP 429.
+
+**RATE_LIMIT_PER_HOUR**
+- Research requests allowed per client in a rolling hour
+- Default: `3`
+
+**RATE_LIMIT_PER_DAY**
+- Research requests allowed per client in a rolling 24 hours
+- Default: `5`
+
+**FORWARDED_ALLOW_IPS**
+- Comma-separated addresses or networks of reverse proxies whose `X-Forwarded-For` header uvicorn trusts
+- Default: empty, which trusts no proxy and keys clients on the socket peer
+- Behind a platform proxy, set it so each visitor gets their own allowance. Never use `*`
+- Per-platform values: see "Client Addresses Behind a Proxy" in `DEPLOYMENT.md`
+
+
 
 ### 1. Get API Keys
 

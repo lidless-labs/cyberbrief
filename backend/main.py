@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import time
-from collections import defaultdict
+from collections import OrderedDict
 from pathlib import Path
 from typing import Optional
 
@@ -69,21 +69,65 @@ app.add_middleware(
 
 RATE_LIMIT_PER_HOUR = int(os.environ.get("RATE_LIMIT_PER_HOUR", "3"))
 RATE_LIMIT_PER_DAY = int(os.environ.get("RATE_LIMIT_PER_DAY", "5"))
-_rate_hits: dict[str, list[float]] = defaultdict(list)
+# Upper bound on tracked clients so memory stays flat under many distinct addresses.
+RATE_LIMIT_MAX_CLIENTS = 10_000
+
+_HOUR = 3600
+_DAY = 86400
+
+# Ordered by each client's most recent recorded hit, oldest first, so expired
+# and over-cap clients are always evicted from the front.
+_rate_hits: OrderedDict[str, list[float]] = OrderedDict()
+
+
+def _clock() -> float:
+    return time.monotonic()
+
+
+def _evict_expired(now: float) -> None:
+    """Drop clients whose most recent hit has left the daily window."""
+    while _rate_hits:
+        client_ip, hits = next(iter(_rate_hits.items()))
+        if now - hits[-1] < _DAY:
+            break
+        del _rate_hits[client_ip]
 
 
 def _check_rate_limit(client_ip: str) -> None:
     """Raise 429 if client exceeds hourly or daily research limits."""
-    now = time.time()
-    hits = _rate_hits[client_ip]
-    # Prune entries older than 24h
-    _rate_hits[client_ip] = hits = [t for t in hits if now - t < 86400]
-    hour_hits = sum(1 for t in hits if now - t < 3600)
+    now = _clock()
+    _evict_expired(now)
+
+    # A client with no hits left in the window was already evicted above, so
+    # an empty list here never leaves a key behind.
+    hits = [t for t in _rate_hits.get(client_ip, ()) if now - t < _DAY]
+    if hits:
+        # Reassigning an existing key keeps its position, so ordering still
+        # tracks the last recorded hit.
+        _rate_hits[client_ip] = hits
+
+    hour_hits = sum(1 for t in hits if now - t < _HOUR)
     if hour_hits >= RATE_LIMIT_PER_HOUR:
         raise HTTPException(429, "Rate limit exceeded. Try again in an hour.")
     if len(hits) >= RATE_LIMIT_PER_DAY:
         raise HTTPException(429, "Daily limit reached. Try again tomorrow.")
+
     hits.append(now)
+    _rate_hits[client_ip] = hits
+    _rate_hits.move_to_end(client_ip)
+    while len(_rate_hits) > RATE_LIMIT_MAX_CLIENTS:
+        _rate_hits.popitem(last=False)
+
+
+def _client_key(req: Request) -> str:
+    """Rate-limit key for a request.
+
+    uvicorn's proxy headers middleware has already rewritten ``req.client``
+    from X-Forwarded-For when, and only when, the socket peer is listed in
+    FORWARDED_ALLOW_IPS. Otherwise this is the socket peer. Never parse
+    forwarding headers here: that would trust them from any peer.
+    """
+    return req.client.host if req.client else "unknown"
 
 
 # ─── Health ───────────────────────────────────────────────────────────────────
@@ -106,7 +150,7 @@ async def research_endpoint(request: ResearchRequest, req: Request) -> dict:
     Returns a ResearchBundle with search results, synthesized content,
     extracted IOCs, and suggested ATT&CK techniques.
     """
-    _check_rate_limit(req.client.host if req.client else "unknown")
+    _check_rate_limit(_client_key(req))
     try:
         bundle = await run_research(
             topic=request.topic,
@@ -138,7 +182,7 @@ async def research_from_sources_endpoint(request: SourceResearchRequest, req: Re
     Skips the search step and goes straight to synthesis from the provided content.
     Accepts URLs (fetched server-side), raw text, and base64-encoded PDFs.
     """
-    _check_rate_limit(req.client.host if req.client else "unknown")
+    _check_rate_limit(_client_key(req))
     if not request.sources:
         raise HTTPException(status_code=400, detail="At least one source is required.")
     if len(request.sources) > 20:

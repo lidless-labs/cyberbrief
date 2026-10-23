@@ -14,5 +14,10 @@ COPY backend/ ./
 
 ENV PORT=8080
 
+# X-Forwarded-For is trusted only from the peers listed in FORWARDED_ALLOW_IPS.
+# Empty means trust none, so each client is identified by its socket peer.
+# DEPLOYMENT.md lists the value to set behind each platform's proxy.
+ENV FORWARDED_ALLOW_IPS=""
+
 # Cloud Run has a 60-min max timeout; set 7 min for Deep Research safety margin
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT} --timeout-keep-alive 400"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT} --proxy-headers --forwarded-allow-ips \"${FORWARDED_ALLOW_IPS}\" --timeout-keep-alive 400"]
